@@ -2,10 +2,10 @@ const express = require("express")
 const mainRouter = express.Router()
 
 const profileRouter = require("./profile")
-const vehiclesRouter = require("./vehicle")
+const vehicleRouter = require("./vehicle")
 
 mainRouter.use("/profile", profileRouter)
-mainRouter.use("/vehicle", vehicleRouter)
+mainRouter.use("/vehicles", vehicleRouter)
 
 mainRouter.get("/", (req, res) => {
   res.status(200).json({ Page: "Weclome To Vehicle Rent" })

@@ -6,10 +6,31 @@ const getAllProfile = (req, res) => {
   profileModel
     .getAllProfile(query)
     .then(({ status, result }) => {
-      return res.status(status).json({ result: result })
+      // console.log(result.length)
+      const page = query.page
+      const limit = query.limit
+      const startindex = (page - 1) * limit
+      const endIndex = page * limit
+      // const result1 = result.slice(startindex, endIndex)
+
+      const result1 = {}
+      if (endIndex < result.length)
+        result.newt = {
+          page: page + 1,
+          limit: limit
+        }
+      if (startindex > 0)
+        result.previous = {
+          page: page - 1,
+          limit: limit
+        }
+      result1.page = result.slice(startindex, endIndex)
+      return res.status(status).json({ result: result1 })
     })
-    .catch(({ status, result }) => {
-      res.status(status).json({ message: "An error occurred on the server" })
+    .catch(({ status, err }) => {
+      res
+        .status(status)
+        .json({ message: "An error occurred on the server", err })
     })
 }
 
@@ -42,8 +63,10 @@ const addProfile = (req, res) => {
         result
       })
     })
-    .catch(({ status, result }) => {
-      res.status(status).json({ message: "An error occurred on the server" })
+    .catch(({ status, err }) => {
+      res
+        .status(status)
+        .json({ message: "An error occurred on the server", err })
     })
 }
 
@@ -54,11 +77,12 @@ const editProfile = (req, res) => {
   profileModel
     .editProfile(id, body)
     .then(({ status, result }) => {
-      // console.log(status, result)
       res.status(status).json({ message: "Edit Profile successfuly" })
     })
-    .catch(({ status, result, message }) => {
-      res.status(status).json({ status, message, example_date: "DD-MM-YYYY" })
+    .catch(({ status, err, message }) => {
+      res
+        .status(status)
+        .json({ status, message, example_date: "DD-MM-YYYY", err })
     })
 }
 

@@ -1,15 +1,16 @@
 const mysql = require("mysql")
 const db = require("../configs/db")
+const moment = require("moment")
 
 // get all Profile, by order id & name
 const getAllProfile = (query) => {
   return new Promise((resolve, reject) => {
     let sql =
-      "SELECT iduser, name, gender, phoneNumber, email, dateOfbirth, address, photo FROM users"
+      "SELECT id, name, gender, phoneNumber, email, dateOfbirth, address, photo FROM users"
     const statement = []
     const order = query.order
     let orderBy = ""
-    if (query.by && query.by.toLowerCase() == "id") orderBy = "iduser"
+    if (query.by && query.by.toLowerCase() == "id") orderBy = "id"
     if (query.by && query.by.toLowerCase() == "name") orderBy = "name"
     if (order && orderBy) {
       sql += " ORDER BY ? ?"
@@ -27,7 +28,7 @@ const getAllProfile = (query) => {
 const getProfileById = (id) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT iduser, name, gender, phoneNumber, email, dateOfBirth, address, photo FROM users WHERE iduser = ?"
+      "SELECT id, name, gender, phoneNumber, email, dateOfBirth, address, photo FROM users WHERE id = ?"
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err })
       if (result.length == 0) return resolve({ status: 404, result })
@@ -50,7 +51,7 @@ const addProfile = (body) => {
 
     const dateInput = formatDate(dateQuery)
     const sql =
-      "INSERT INTO users VALUES(null, ? , ? , ? , ? , ? , ? , ?, null)"
+      "INSERT INTO users VALUES(null, ? , ? , ? , ? , ? , ? , ?, null, null)"
     const statement = [
       name,
       gender,
@@ -91,9 +92,13 @@ const editProfile = (id, body) => {
       const dateStr = date.split("-")
       return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0]
     }
-    if (typeof dateQuery == "undefined") {
+    if (typeof dateQuery == "undefined")
       return reject({ status: 500, message: "Data cannot be empty!" })
-    }
+
+    const dataCheck = moment(dateQuery, "DD-MM-YYYY", true).isValid()
+
+    if (dataCheck == false)
+      return reject({ status: 500, message: "Wrong input date" })
 
     const dateInput = formatDate(dateQuery)
     const statement = [
@@ -108,9 +113,10 @@ const editProfile = (id, body) => {
     ]
 
     const sql =
-      "UPDATE users SET name = ?, gender = ?, phoneNumber = ?, email = ?, dateOfBirth = ?, address = ?, photo = ? WHERE idUser = ?"
+      "UPDATE users SET name = ?, gender = ?, phoneNumber = ?, email = ?, dateOfBirth = ?, address = ?, photo = ? WHERE id = ?"
 
     db.query(sql, statement, (err, result) => {
+      // console.log(result, err)
       if (
         typeof name == "undefined" ||
         name.length == 0 ||
@@ -138,7 +144,7 @@ const editProfile = (id, body) => {
 // delete profile
 const deleteProfile = (id) => {
   return new Promise((resolve, reject) => {
-    const sql = "DELETE FROM users WHERE iduser = ?"
+    const sql = "DELETE FROM users WHERE id = ?"
     db.query(sql, [id], (err, result) => {
       const { affectedRows } = result
 
