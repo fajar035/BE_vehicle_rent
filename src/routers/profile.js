@@ -9,7 +9,7 @@ profileRouter.get("/", profileController.getAllProfile)
 profileRouter.get("/:id", profileController.getProfileById)
 
 // new data users
-profileRouter.post("/newProfile", profileController.addProfile)
+profileRouter.post("/", profileController.addProfile)
 
 // edit all data users
 profileRouter.put("/:id", profileController.editProfile)

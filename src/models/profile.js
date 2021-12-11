@@ -3,7 +3,7 @@ const db = require("../configs/db")
 const moment = require("moment")
 
 // get all Profile, by order id & name
-const getAllProfile = (query) => {
+const getAllProfile = (keyword, query) => {
   return new Promise((resolve, reject) => {
     let sql =
       "SELECT id, name, gender, phoneNumber, email, dateOfbirth, address, photo FROM users"
@@ -12,10 +12,17 @@ const getAllProfile = (query) => {
     let orderBy = ""
     if (query.by && query.by.toLowerCase() == "id") orderBy = "id"
     if (query.by && query.by.toLowerCase() == "name") orderBy = "name"
+
+    if (keyword.length !== 2) {
+      sql += " WHERE name LIKE ?"
+      statement.push(mysql.raw(keyword))
+    }
+
     if (order && orderBy) {
       sql += " ORDER BY ? ?"
       statement.push(mysql.raw(orderBy), mysql.raw(order))
     }
+
     db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, err })
       if (result.length == 0) return resolve({ status: 400, result })
@@ -23,6 +30,8 @@ const getAllProfile = (query) => {
     })
   })
 }
+
+// get all profile and search
 
 // get profile by id
 const getProfileById = (id) => {

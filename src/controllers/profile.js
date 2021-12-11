@@ -3,29 +3,37 @@ const profileModel = require("../models/profile")
 // get all profile
 const getAllProfile = (req, res) => {
   const { query } = req
+  let keyword = `%%`
+
+  if (query.cari) keyword = `'%${query.cari}%'`
   profileModel
-    .getAllProfile(query)
+    .getAllProfile(keyword, query)
     .then(({ status, result }) => {
-      // console.log(result.length)
       const page = query.page
       const limit = query.limit
       const startindex = (page - 1) * limit
       const endIndex = page * limit
-      // const result1 = result.slice(startindex, endIndex)
-
       const result1 = {}
-      if (endIndex < result.length)
-        result.newt = {
-          page: page + 1,
-          limit: limit
-        }
-      if (startindex > 0)
-        result.previous = {
-          page: page - 1,
-          limit: limit
-        }
+
       result1.page = result.slice(startindex, endIndex)
-      return res.status(status).json({ result: result1 })
+
+      const pagination = result1.page.length
+
+      // jika tidak ada pagination
+      if (pagination == 0)
+        return res.status(status).json({
+          result: {
+            profile: result
+          }
+        })
+
+      const profile = result1.page
+      return res.status(status).json({
+        result: {
+          page: page,
+          profile
+        }
+      })
     })
     .catch(({ status, err }) => {
       res
