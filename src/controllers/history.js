@@ -3,12 +3,14 @@ const historyModel = require("../models/history")
 // get all history
 const getAllHistory = (req, res) => {
   const { query } = req
+  let keyword = `%%`
+  if (query.cari) keyword = `'%${query.cari}%'`
   historyModel
-    .getAllHistory(query)
+    .getAllHistory(keyword, query)
     .then(({ status, result }) => {
-      return res.status(status).json(result)
+      return res.status(status).json({result})
     })
-    .catch((status, err) => {
+    .catch(({ status, err }) => {
       res
         .status(status)
         .json({ message: "An error occurred on the server", err })
@@ -68,4 +70,25 @@ const deleteHistory = (req, res) => {
     })
 }
 
-module.exports = { getAllHistory, newHistory, deleteHistory, gethistoryById }
+// popular vehicles
+const popular = (req, res) => {
+  historyModel
+    .popular()
+    .then(({ status, result }) => {
+      return res.status(status).json({ popular: result })
+    })
+    .catch(({ status, err }) => {
+      return res.status(status).json({
+        message: "An error occurred on the server",
+        err
+      })
+    })
+}
+
+module.exports = {
+  getAllHistory,
+  newHistory,
+  deleteHistory,
+  gethistoryById,
+  popular
+}

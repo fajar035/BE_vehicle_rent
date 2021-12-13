@@ -3,13 +3,18 @@ const vehicleModel = require("../models/vehicle")
 // get all vehicle
 const getAllVehicle = (req, res) => {
   const { query } = req
+  let keyword = `%%`
+
+  if (query.cari) keyword = `'%${query.cari}%'`
   vehicleModel
-    .getAllVehicle(query)
+    .getAllVehicle(keyword, query)
     .then(({ status, result }) => {
-      return res.status(status).json({ result: result })
+      return res.status(status).json({result})
     })
-    .catch(({ status, result }) => {
-      res.status(status).json({ message: "Am error occurred on the server" })
+    .catch(({ status, err }) => {
+      res
+        .status(status)
+        .json({ message: "Am error occurred on the server", err })
     })
 }
 
@@ -56,11 +61,14 @@ const editVehicle = (req, res) => {
 
   vehicleModel
     .editVehicle(id, body)
-    .then(({ status, result }) => {
-      res.status(status).json({ message: "Edit Vehicle successfuly", result })
+    .then(({ status, result, message }) => {
+      res.status(status).json({
+        message,
+        result
+      })
     })
-    .catch(({ status, err }) => {
-      res.status(status).json({ status, err })
+    .catch(({ status, message }) => {
+      res.status(status).json({ status, message })
     })
 }
 

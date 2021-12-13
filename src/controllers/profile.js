@@ -9,31 +9,7 @@ const getAllProfile = (req, res) => {
   profileModel
     .getAllProfile(keyword, query)
     .then(({ status, result }) => {
-      const page = query.page
-      const limit = query.limit
-      const startindex = (page - 1) * limit
-      const endIndex = page * limit
-      const result1 = {}
-
-      result1.page = result.slice(startindex, endIndex)
-
-      const pagination = result1.page.length
-
-      // jika tidak ada pagination
-      if (pagination == 0)
-        return res.status(status).json({
-          result: {
-            profile: result
-          }
-        })
-
-      const profile = result1.page
-      return res.status(status).json({
-        result: {
-          page: page,
-          profile
-        }
-      })
+      return res.status(status).json({ result })
     })
     .catch(({ status, err }) => {
       res
@@ -66,10 +42,17 @@ const addProfile = (req, res) => {
   profileModel
     .addProfile(body)
     .then(({ status, result }) => {
+      if (status == 404)
+        return res
+          .status(status)
+          .json({ message: "data cannot be empty", result })
+
       res.status(status).json({
         message: "Add new profile successfuly",
         result
       })
+      // const {name, gender, phoneNumber, dateOfBirth, address, photo} = result
+      // cek data jika tidak ada
     })
     .catch(({ status, err }) => {
       res
@@ -85,7 +68,15 @@ const editProfile = (req, res) => {
   profileModel
     .editProfile(id, body)
     .then(({ status, result }) => {
-      res.status(status).json({ message: "Edit Profile successfuly" })
+      if (status === 404)
+        return res.status(status).json({
+          id: id,
+          status: status,
+          message: "User not found"
+        })
+      return res
+        .status(status)
+        .json({ id: id, message: "Data updated successfully" })
     })
     .catch(({ status, err, message }) => {
       res
@@ -114,10 +105,31 @@ const deleteProfile = (req, res) => {
     })
 }
 
+// upload photo
+const uploadPhoto = (req, res) => {
+  // res.status(200).json({message: "Upload Berhasil", url: req.file})
+  const { body } = req
+  const { id } = body
+  const { file } = req
+
+  const fileName = file.filename
+  profileModel
+    .uploadPhoto(id, fileName)
+    .then(({ status, result }) => {
+      res.status(200).json({ message: "Upload Berhasil", result: result })
+    })
+    .catch(({ status, err }) => {
+      res
+        .status(status)
+        .json({ message: "An error occurred on the server", err })
+    })
+}
+
 module.exports = {
   getAllProfile,
   getProfileById,
   addProfile,
   editProfile,
-  deleteProfile
+  deleteProfile,
+  uploadPhoto
 }

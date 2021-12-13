@@ -12,8 +12,8 @@
     "semi": "error",
     "eqeqeq": "off",
     "curly": "off",
-    "quotes": ["error", "double"],
+    "quotes": [0, "double"],
     "prefer-promise-reject-errors": "off",
-    "properties": "never"
+    "camelcase": "off"
   }
 }

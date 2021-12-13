@@ -14,4 +14,7 @@ historyRouter.post("/", historyController.newHistory)
 // delete data by id
 historyRouter.delete("/:id", historyController.deleteHistory)
 
+// popular vehicles
+historyRouter.get("/popular", historyController.popular)
+
 module.exports = historyRouter
