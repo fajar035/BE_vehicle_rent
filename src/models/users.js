@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const mysql = require("mysql")
 const db = require("../configs/db")
 const moment = require("moment")
@@ -6,9 +7,10 @@ const moment = require("moment")
 const getAllProfile = (keyword, query) => {
   return new Promise((resolve, reject) => {
     let sql =
-      "SELECT id, name, gender, phoneNumber, dateOfbirth, address, photo FROM users"
+      "SELECT  name, email ,gender, dob, nohp, address, photo FROM users"
     const statement = []
-    const order = query.order
+
+    const order = query.sort
     let orderBy = ""
     if (query.by && query.by.toLowerCase() == "id") orderBy = "id"
     if (query.by && query.by.toLowerCase() == "name") orderBy = "name"
@@ -32,32 +34,53 @@ const getAllProfile = (keyword, query) => {
       const page = parseInt(query.page)
       const limit = parseInt(query.limit)
       const count = result[0].count
+
       if (query.page && query.limit) {
         sql += " LIMIT ? OFFSET ?"
         const offset = (page - 1) * limit
         statement.push(limit, offset)
       }
 
-      const meta = {
-        next:
-          page == Math.ceil(count / limit)
-            ? null
-            : `/profile?by=id&order=asc&page=${page + 1}&limit=${limit}`,
-        prev:
-          page == 1
-            ? null
-            : `/profile?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+      // const meta = {
+      //   next:
+      //     page == Math.ceil(count / limit)
+      //       ? null
+      //       : `/profile?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+      //   prev:
+      //     page == 1
+      //       ? null
+      //       : `/profile?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+      //   count
+      // }
+
+      const meta2 = {
+        next: isNaN(page)
+          ? null
+          : page == Math.ceil(count / limit)
+          ? null
+          : `/profile?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+        prev: isNaN(limit)
+          ? null
+          : page == 1 || page == 0
+          ? null
+          : `/profile?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         count
       }
-      db.query(sql, statement, (err, profile) => {
-        console.log(statement)
+
+      db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err })
-        if (profile.length == 0)
+
+        // query page tidak ditemukan
+        if (result.length == 0)
           return resolve({
             status: 400,
-            result: { data: "Data not found", profile }
+            result: {
+              data: "Data not found",
+              result
+            }
           })
-        resolve({ status: 200, result: { data: meta, profile } })
+
+        resolve({ status: 200, result: { page: meta2, result } })
       })
     })
   })
@@ -67,7 +90,7 @@ const getAllProfile = (keyword, query) => {
 const getProfileById = (id) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT id,  name, gender, phoneNumber, dateOfBirth, address, photo FROM users WHERE id = ?"
+      "SELECT id, name, email,dob, nohp, address, photo FROM users WHERE id = ?"
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err })
       if (result.length == 0) return resolve({ status: 404, result })
@@ -79,19 +102,18 @@ const getProfileById = (id) => {
 // add new profile
 const addProfile = (body) => {
   return new Promise((resolve, reject) => {
-    const { name, gender, phoneNumber, dateOfBirth, address, photo } = body
+    const { name, gender, dob, nohp, address } = body
 
     if (
       typeof name == "undefined" ||
       typeof gender == "undefined" ||
-      typeof phoneNumber == "undefined" ||
-      typeof dateOfBirth == "undefined" ||
-      typeof address == "undefined" ||
-      typeof photo == "undefined"
+      typeof dob == "undefined" ||
+      typeof nohp == "undefined" ||
+      typeof address == "undefined"
     )
       return resolve({ status: 404 })
 
-    const dateQuery = dateOfBirth
+    const dateQuery = dob
 
     const formatDate = (date) => {
       const dateStr = date.split("-")
@@ -100,9 +122,9 @@ const addProfile = (body) => {
 
     const dateInput = formatDate(dateQuery)
     // insert into users values(id, name, gender, phoneNumber, dateInput, address, photo, email,null, null )
-    const sql = "INSERT INTO users VALUES(null, ? , ? , ? , ? , ? , ?)"
-    const statement = [name, gender, phoneNumber, dateInput, address, photo]
-
+    const sql =
+      "INSERT INTO users VALUES(null, ? , ? , ? , ? , ? ,null, null, null)"
+    const statement = [name, gender, dateInput, nohp, address]
     db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, message: "Query Error", err })
       resolve({
@@ -110,10 +132,9 @@ const addProfile = (body) => {
         result: {
           name,
           gender,
-          phoneNumber,
+          nohp,
           dateInput,
-          address,
-          photo
+          address
         }
       })
     })
@@ -123,9 +144,9 @@ const addProfile = (body) => {
 // edit profile
 const editProfile = (id, body) => {
   return new Promise((resolve, reject) => {
-    const { name, gender, phoneNumber, dateOfBirth, address, photo } = body
+    const { name, gender, dob, nohp, address } = body
 
-    const dateQuery = dateOfBirth
+    const dateQuery = dob
 
     const formatDate = (date) => {
       const dateStr = date.split("-")
@@ -140,11 +161,10 @@ const editProfile = (id, body) => {
       return reject({ status: 500, message: "Wrong input date" })
 
     const dateInput = formatDate(dateQuery)
-    const statement = [name, gender, phoneNumber, dateInput, address, photo, id]
+    const statement = [name, gender, dateInput, nohp, address, id]
 
     const sql =
-      "UPDATE users SET name = ?, gender = ?, phoneNumber = ?, dateOfBirth = ?, address = ?, photo = ? WHERE id = ?"
-
+      "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ? WHERE id = ?"
     db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, err })
       const { affectedRows } = result

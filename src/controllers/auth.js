@@ -7,15 +7,18 @@ const register = (req, res) => {
     .then(({ status, result }) => {
       const { email, levels } = body
       const response = {
-        email,
-        levels,
-        id: result.insertId
+        message: "Register succesccfuly",
+        result: {
+          email,
+          levels,
+          id: result.insertId
+        }
       }
-
+      // console.log(err)
       return res.status(status).json(response)
     })
     .catch(({ status, err }) => {
-      // console.log(status, err)
+      console.log(status, err)
       return res.status(status).json({ err })
     })
 }
@@ -24,8 +27,12 @@ const login = (req, res) => {
   const { body } = req
   authModel
     .login(body)
-    .then(({ status, result }) => {
-      res.status(status).json({ result })
+    .then(({ status, token }) => {
+      res.status(status).json({
+        result: {
+          token: token
+        }
+      })
     })
     .catch(({ status, err }) => {
       res.status(status).json({ err })

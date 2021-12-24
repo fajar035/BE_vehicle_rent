@@ -1,4 +1,4 @@
-const profileModel = require("../models/profile")
+const usersModel = require("../models/users")
 
 // get all profile
 const getAllProfile = (req, res) => {
@@ -6,7 +6,7 @@ const getAllProfile = (req, res) => {
   let keyword = `%%`
 
   if (query.cari) keyword = `'%${query.cari}%'`
-  profileModel
+  usersModel
     .getAllProfile(keyword, query)
     .then(({ status, result }) => {
       return res.status(status).json({ result })
@@ -22,7 +22,7 @@ const getAllProfile = (req, res) => {
 const getProfileById = (req, res) => {
   const { params } = req
   const id = params.id
-  profileModel
+  usersModel
     .getProfileById(id)
     .then(({ status, result }) => {
       if (status === 404)
@@ -39,7 +39,7 @@ const getProfileById = (req, res) => {
 // add new profile
 const addProfile = (req, res) => {
   const { body } = req
-  profileModel
+  usersModel
     .addProfile(body)
     .then(({ status, result }) => {
       if (status == 404)
@@ -65,7 +65,7 @@ const addProfile = (req, res) => {
 const editProfile = (req, res) => {
   const { body, params } = req
   const id = params.id
-  profileModel
+  usersModel
     .editProfile(id, body)
     .then(({ status, result }) => {
       if (status === 404)
@@ -89,7 +89,7 @@ const editProfile = (req, res) => {
 const deleteProfile = (req, res) => {
   const { params } = req
   const id = params.id
-  profileModel
+  usersModel
     .deleteProfile(id)
     .then(({ status, result }) => {
       if (status === 404)
@@ -111,9 +111,9 @@ const uploadPhoto = (req, res) => {
   const { body } = req
   const { id } = body
   const { file } = req
-
+  console.log(file)
   const fileName = file.filename
-  profileModel
+  usersModel
     .uploadPhoto(id, fileName)
     .then(({ status, result }) => {
       res.status(200).json({ message: "Upload Berhasil", result: result })
