@@ -150,11 +150,7 @@ const addProfile = (body) => {
 const editProfile = (body, userInfo) => {
   return new Promise((resolve, reject) => {
     const { name, gender, dob, nohp, address } = body
-    // console.log(userInfo)
-
     const { id } = userInfo
-    console.log(id)
-
     const dateQuery = dob
 
     const formatDate = (date) => {
@@ -214,11 +210,23 @@ const uploadPhoto = (fileName, userInfo) => {
   })
 }
 
+const getPhoto = (userInfo) => {
+  return new Promise((resolve, reject) => {
+    const { id, email } = userInfo
+    const sql = "SELECT photo FROM users WHERE id = ?"
+    db.query(sql, [id], (err, result) => {
+      if (err) return reject({ status: 500, err })
+      resolve({ status: 200, result: { result, id: id, email: email } })
+    })
+  })
+}
+
 module.exports = {
   getAllProfile,
   getProfileById,
   addProfile,
   editProfile,
   deleteProfile,
-  uploadPhoto
+  uploadPhoto,
+  getPhoto
 }

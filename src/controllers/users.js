@@ -63,9 +63,8 @@ const addProfile = (req, res) => {
 
 // edit profile
 const editProfile = (req, res) => {
-  const { body, params, userInfo } = req
-  // console.log(userInfo)
-  const id = params.id
+  const { body, userInfo } = req
+  const { id } = userInfo
   usersModel
     .editProfile(body, userInfo)
     .then(({ status, result }) => {
@@ -84,7 +83,7 @@ const editProfile = (req, res) => {
     .catch(({ status, err, message }) => {
       res
         .status(status)
-        .json({ status, message, example_date: "DD-MM-YYYY", err })
+        .json({ id: id, message, example_date: "DD-MM-YYYY", err })
     })
 }
 
@@ -111,7 +110,7 @@ const deleteProfile = (req, res) => {
 // upload photo
 const uploadPhoto = (req, res) => {
   // res.status(200).json({message: "Upload Berhasil", url: req.file})
-  const { body, userInfo } = req
+  const { userInfo } = req
   // const { id } = body
   const { file } = req
   // console.log(file)
@@ -120,7 +119,22 @@ const uploadPhoto = (req, res) => {
   usersModel
     .uploadPhoto(fileName, userInfo)
     .then(({ status, result }) => {
-      res.status(200).json({ message: "Upload Berhasil", result: result })
+      res.status(status).json({ message: "Upload Berhasil", result: result })
+    })
+    .catch(({ status, err }) => {
+      res
+        .status(status)
+        .json({ message: "An error occurred on the server", err })
+    })
+}
+
+const getPhoto = (req, res) => {
+  const { userInfo } = req
+
+  usersModel
+    .getPhoto(userInfo)
+    .then(({ status, result }) => {
+      res.status(status).json(result)
     })
     .catch(({ status, err }) => {
       res
@@ -135,5 +149,6 @@ module.exports = {
   addProfile,
   editProfile,
   deleteProfile,
-  uploadPhoto
+  uploadPhoto,
+  getPhoto
 }

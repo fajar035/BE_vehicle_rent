@@ -7,17 +7,18 @@ const upload = require("../middleware/upload")
 // const token = require("../middleware/validate")
 
 usersRouter.get("/", checkToken, usersControllers.getAllProfile)
-usersRouter.get("/:id", usersControllers.getProfileById)
+usersRouter.get("/id/:id", usersControllers.getProfileById)
+usersRouter.get("/photo", checkToken, usersControllers.getPhoto)
+
 usersRouter.post("/", usersControllers.addProfile)
-usersRouter.put("/", checkToken, usersControllers.editProfile)
-usersRouter.delete("/", usersControllers.deleteProfile)
 usersRouter.post(
   "/upload",
   checkToken,
   upload.single("user"),
   usersControllers.uploadPhoto
 )
-usersRouter.get("/photo")
+usersRouter.put("/", checkToken, usersControllers.editProfile)
+usersRouter.delete("/", usersControllers.deleteProfile)
 
 module.exports = usersRouter
 

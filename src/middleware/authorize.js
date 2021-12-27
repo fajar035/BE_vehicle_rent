@@ -9,7 +9,7 @@ const checkToken = (req, res, next) => {
   jwt.verify(token, process.env.SECRET_KEY, jwtOptions, (err, payload) => {
     if (err)
       return res.status(403).json({
-        message: "You need to login to perform this action.",
+        message: "login your account first.",
         err: err.message
       })
     const { id, email, roles } = payload
