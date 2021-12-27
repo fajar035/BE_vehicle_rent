@@ -29,13 +29,13 @@ Vehicle Rental is a modern application for booking a vehicle. We have modern and
 ### Using Package
 
 <div id=package></div>
-- [bcrypt](https://www.npmjs.com/package/bcrypt)
-- [cors](https://www.npmjs.com/package/cors)
-- [dotenv](https://www.npmjs.com/package/dotenv)
-- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
-- [moment](https://www.npmjs.com/package/moment)
-- [multer](https://www.npmjs.com/package/multer)
-- [mysql](https://www.npmjs.com/package/mysql)
+* [bcrypt](https://www.npmjs.com/package/bcrypt)
+* [cors](https://www.npmjs.com/package/cors)
+* [dotenv](https://www.npmjs.com/package/dotenv)
+* [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
+* [moment](https://www.npmjs.com/package/moment)
+* [multer](https://www.npmjs.com/package/multer)
+* [mysql](https://www.npmjs.com/package/mysql)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -65,6 +65,6 @@ This is an example of how to list things you need to use the software and how to
    ```sh
    npm install
    ```
-3. Install NPM packages required <p align="left">(<a href="#top">Get to Package</a>)</p>
+3. Install NPM packages required <p align="left">(<a href="#package">Get to Package</a>)</p>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
