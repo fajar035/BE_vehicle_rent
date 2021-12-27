@@ -5,13 +5,14 @@ const moment = require("moment")
 // get all history
 const getAllHistory = (keyword, query) => {
   return new Promise((resolve, reject) => {
+    // total = jumlah price
     let sql =
-      "SELECT h.id, u.name AS 'user', v.name AS 'vehicle', v.category, v.price, v.photo AS 'photo', h.booking_date, h.return_date, h.rating from history h join users u ON h.user_id = u.id join vehicles v ON h.vehicles_id = v.id"
+      "select h.id, u.name as 'name', v.name as 'vehicle', c.category ,  l.location,v.price, v.photo as 'photo',h.qty, h.start_date as 'booking date', h.return_date as 'return date', h.total, h.rating from history h join users u ON h.id_users = u.id join vehicles v ON h.id_vehicles = v.id join category c on h.id_category = c.id join location l on h.id_location = l.id"
     const statement = []
-    const order = query.order
+    const order = query.sort
     let orderBy = ""
     if (query.by && query.by.toLowerCase() == "id") orderBy = "id"
-    if (query.by && query.by.toLowerCase() == "user") orderBy = "user"
+    if (query.by && query.by.toLowerCase() == "name") orderBy = "name"
     if (query.by && query.by.toLowerCase() == "vehicle") orderBy = "vehicle"
     if (keyword.length !== 2) {
       sql += " WHERE u.name LIKE ?"
@@ -38,14 +39,16 @@ const getAllHistory = (keyword, query) => {
       }
 
       const meta = {
-        next:
-          page == Math.ceil(count / limit)
-            ? null
-            : `/history?by=id&order=asc&page=${page + 1}&limit=${limit}`,
-        prev:
-          page == 1
-            ? null
-            : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+        next: isNaN(page)
+          ? null
+          : page == Math.ceil(count / limit)
+          ? null
+          : `/history?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+        prev: isNaN(limit)
+          ? null
+          : page == 1 || page == 0
+          ? null
+          : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         count
       }
       db.query(sql, statement, (err, history) => {
@@ -64,8 +67,18 @@ const getAllHistory = (keyword, query) => {
 // new history
 const newHistory = (body) => {
   return new Promise((resolve, reject) => {
-    const { user_id, vehicles_id, return_date, rating } = body
-    const sql = "INSERT INTO history VALUES(null, ?,?,?,?,?)"
+    const {
+      id_users,
+      id_vehicles,
+      id_category,
+      id_location,
+      qty,
+      start_date,
+      return_date,
+      total,
+      rating
+    } = body
+    const sql = "INSERT INTO history VALUES(null, ?,?,?,?,?,?,?,?,?)"
 
     const date = new Date()
     const tgl = date.getDate()
@@ -97,10 +110,14 @@ const newHistory = (body) => {
     const dateInputReturn = formatDate(dateReturnQuery)
 
     const statement = [
-      user_id,
-      vehicles_id,
+      id_users,
+      id_vehicles,
+      id_category,
+      id_location,
+      qty,
       dateInputBooking,
       dateInputReturn,
+      total,
       rating
     ]
 
@@ -112,10 +129,14 @@ const newHistory = (body) => {
         result: {
           id: result.insertId,
           message: "Successful Car Rental",
-          user_id,
-          vehicles_id,
-          booking_date,
+          id_users,
+          id_vehicles,
+          id_category,
+          id_location,
+          qty,
+          start_date,
           return_date,
+          total,
           rating
         }
       })
@@ -139,9 +160,11 @@ const deleteHistory = (id) => {
 // popular vehicles by rating
 const popular = () => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT h.id, v.name as 'vehicle', v.category, v.price, v.photo as 'photo' from history h
-    join users u on h.user_id = u.id
-    join vehicles v on h.vehicles_id = v.id
+    const sql = `select h.id, u.name as 'name', v.name as 'vehicle', c.category ,  l.location,v.price, v.photo as 'photo',
+    h.qty, h.start_date as 'booking date', h.return_date as 'return date', h.total, h.rating 
+    from history h join users u ON h.id_users = u.id 
+    join vehicles v ON h.id_vehicles = v.id 
+    join category c on h.id_category = c.id join location l on h.id_location = l.id
     where h.rating = 5 order by h.rating`
 
     db.query(sql, (err, result) => {

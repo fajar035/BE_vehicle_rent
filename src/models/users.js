@@ -147,9 +147,13 @@ const addProfile = (body) => {
 }
 
 // edit profile
-const editProfile = (id, body, userInfo) => {
+const editProfile = (body, userInfo) => {
   return new Promise((resolve, reject) => {
     const { name, gender, dob, nohp, address } = body
+    // console.log(userInfo)
+
+    const { id } = userInfo
+    console.log(id)
 
     const dateQuery = dob
 
@@ -166,7 +170,7 @@ const editProfile = (id, body, userInfo) => {
       return reject({ status: 500, message: "Wrong input date" })
 
     const dateInput = formatDate(dateQuery)
-    const statement = [name, gender, dateInput, nohp, address, userInfo.id]
+    const statement = [name, gender, dateInput, nohp, address, id]
 
     const sql =
       "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ? WHERE id = ?"
@@ -183,6 +187,7 @@ const editProfile = (id, body, userInfo) => {
 const deleteProfile = (id) => {
   return new Promise((resolve, reject) => {
     const sql = "DELETE FROM users WHERE id = ?"
+
     db.query(sql, [id], (err, result) => {
       const { affectedRows } = result
 
@@ -195,12 +200,16 @@ const deleteProfile = (id) => {
 }
 
 // upload photo
-const uploadPhoto = (id, fileName) => {
+const uploadPhoto = (fileName, userInfo) => {
   return new Promise((resolve, reject) => {
+    const { id, email } = userInfo
     const sql = "UPDATE users SET photo = ? WHERE id = ?"
     db.query(sql, [fileName, id], (err, result) => {
       if (err) return reject({ status: 500, err })
-      resolve({ status: 200, result: result.message })
+      resolve({
+        status: 200,
+        result: { id: id, email: email, filename: fileName }
+      })
     })
   })
 }

@@ -10,8 +10,13 @@ usersRouter.get("/", checkToken, usersControllers.getAllProfile)
 usersRouter.get("/:id", usersControllers.getProfileById)
 usersRouter.post("/", usersControllers.addProfile)
 usersRouter.put("/", checkToken, usersControllers.editProfile)
-usersRouter.delete("/:id", usersControllers.deleteProfile)
-usersRouter.post("/upload", upload.single("user"), usersControllers.uploadPhoto)
+usersRouter.delete("/", usersControllers.deleteProfile)
+usersRouter.post(
+  "/upload",
+  checkToken,
+  upload.single("user"),
+  usersControllers.uploadPhoto
+)
 usersRouter.get("/photo")
 
 module.exports = usersRouter

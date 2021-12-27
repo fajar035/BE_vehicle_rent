@@ -67,7 +67,7 @@ const editProfile = (req, res) => {
   // console.log(userInfo)
   const id = params.id
   usersModel
-    .editProfile(id, body, userInfo)
+    .editProfile(body, userInfo)
     .then(({ status, result }) => {
       if (status === 404)
         return res.status(status).json({
@@ -111,13 +111,14 @@ const deleteProfile = (req, res) => {
 // upload photo
 const uploadPhoto = (req, res) => {
   // res.status(200).json({message: "Upload Berhasil", url: req.file})
-  const { body } = req
-  const { id } = body
+  const { body, userInfo } = req
+  // const { id } = body
   const { file } = req
-  console.log(file)
+  // console.log(file)
+
   const fileName = file.filename
   usersModel
-    .uploadPhoto(id, fileName)
+    .uploadPhoto(fileName, userInfo)
     .then(({ status, result }) => {
       res.status(200).json({ message: "Upload Berhasil", result: result })
     })
