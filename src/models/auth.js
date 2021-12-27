@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt")
+const { reject } = require("bcrypt/promises")
 // const res = require("express/lib/response")
 const jwt = require("jsonwebtoken")
 const db = require("../configs/db")
@@ -75,4 +76,15 @@ const login = (body) => {
   })
 }
 
-module.exports = { register, login }
+const logout = (token) => {
+  return new Promise((resolve, reject) => {
+    const statement = [token]
+    const sql = "INSERT INTO blacklist values(null,?)"
+    db.query(sql, statement, (err, result) => {
+      if (err) reject(err)
+      resolve({ status: 200, result: { message: "Logout Success" } })
+    })
+  })
+}
+
+module.exports = { register, login, logout }

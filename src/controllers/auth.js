@@ -39,4 +39,18 @@ const login = (req, res) => {
     })
 }
 
-module.exports = { register, login }
+const logout = (req, res) => {
+  const token = req.header("x-access-token")
+  const { userInfo } = req
+  console.log(userInfo)
+  authModel
+    .logout(token)
+    .then(({ status, result }) => {
+      res.status(status).json({ result })
+    })
+    .catch((err) => {
+      res.status(err).json({ err })
+    })
+}
+
+module.exports = { register, login, logout }

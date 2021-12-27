@@ -27,15 +27,17 @@ Vehicle Rental is a modern application for booking a vehicle. We have modern and
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <div id=package></div>
+
 ### Using Package
+
 <ol>
-<li>* [bcrypt](https://www.npmjs.com/package/bcrypt)</li>
-<li>* [cors](https://www.npmjs.com/package/cors)</li>
-<li>* [dotenv](https://www.npmjs.com/package/dotenv)</li>
-<li>* [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)</li>
-<li>* [moment](https://www.npmjs.com/package/moment)</li>
-<li>* [multer](https://www.npmjs.com/package/multer)</li>
-<li>* [mysql](https://www.npmjs.com/package/mysql)</li>
+<li>*. [bcrypt](https://www.npmjs.com/package/bcrypt)</li>
+<li>*. [cors](https://www.npmjs.com/package/cors)</li>
+<li>*. [dotenv](https://www.npmjs.com/package/dotenv)</li>
+<li>*. [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)</li>
+<li>*. [moment](https://www.npmjs.com/package/moment)</li>
+<li>*. [multer](https://www.npmjs.com/package/multer)</li>
+<li>*. [mysql](https://www.npmjs.com/package/mysql)</li>
 </ol>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
