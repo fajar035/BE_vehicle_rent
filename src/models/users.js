@@ -9,7 +9,7 @@ const getAllProfile = (keyword, query, userInfo) => {
     const { roles } = userInfo
 
     let sql =
-      "SELECT  name, email ,gender, dob, nohp, address, photo FROM users"
+      "SELECT  id, name, email ,gender, dob, nohp, address, photo FROM users"
     const statement = []
 
     const order = query.sort
@@ -180,11 +180,14 @@ const editProfile = (body, userInfo) => {
 }
 
 // delete profile
-const deleteProfile = (id) => {
+const deleteProfile = (id, userInfo) => {
   return new Promise((resolve, reject) => {
+    const { roles } = userInfo
     const sql = "DELETE FROM users WHERE id = ?"
 
     db.query(sql, [id], (err, result) => {
+      if (roles !== "2")
+        reject({ status: 401, err: "Only admin has this access" })
       const { affectedRows } = result
 
       if (err) return reject({ status: 500, err })

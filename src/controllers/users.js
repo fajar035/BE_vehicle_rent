@@ -20,8 +20,8 @@ const getAllProfile = (req, res) => {
 
 // get profile by id
 const getProfileById = (req, res) => {
-  const { params } = req
-  const id = params.id
+  const { userInfo } = req
+  const id = userInfo.id
   usersModel
     .getProfileById(id)
     .then(({ status, result }) => {
@@ -89,10 +89,11 @@ const editProfile = (req, res) => {
 
 // delete profile
 const deleteProfile = (req, res) => {
-  const { params } = req
-  const id = params.id
+  const { query, userInfo } = req
+  const id = query.id
+  // console.log(req)
   usersModel
-    .deleteProfile(id)
+    .deleteProfile(id, userInfo)
     .then(({ status, result }) => {
       if (status === 404)
         return res.status(status).json({ id: id, message: "User not found" })
