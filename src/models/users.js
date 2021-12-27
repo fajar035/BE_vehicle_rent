@@ -4,8 +4,10 @@ const db = require("../configs/db")
 const moment = require("moment")
 
 // get all Profile, by order id & name
-const getAllProfile = (keyword, query) => {
+const getAllProfile = (keyword, query, userInfo) => {
   return new Promise((resolve, reject) => {
+    const { roles } = userInfo
+
     let sql =
       "SELECT  name, email ,gender, dob, nohp, address, photo FROM users"
     const statement = []
@@ -58,17 +60,20 @@ const getAllProfile = (keyword, query) => {
           ? null
           : page == Math.ceil(count / limit)
           ? null
-          : `/profile?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+          : `/users?by=id&order=asc&page=${page + 1}&limit=${limit}`,
         prev: isNaN(limit)
           ? null
           : page == 1 || page == 0
           ? null
-          : `/profile?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+          : `/users?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         count
       }
 
       db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err })
+        // const roles = "2"
+        if (roles !== "2")
+          reject({ status: 401, err: "Only admin has this access" })
 
         // query page tidak ditemukan
         if (result.length == 0)
@@ -142,7 +147,7 @@ const addProfile = (body) => {
 }
 
 // edit profile
-const editProfile = (id, body) => {
+const editProfile = (id, body, userInfo) => {
   return new Promise((resolve, reject) => {
     const { name, gender, dob, nohp, address } = body
 
@@ -161,7 +166,7 @@ const editProfile = (id, body) => {
       return reject({ status: 500, message: "Wrong input date" })
 
     const dateInput = formatDate(dateQuery)
-    const statement = [name, gender, dateInput, nohp, address, id]
+    const statement = [name, gender, dateInput, nohp, address, userInfo.id]
 
     const sql =
       "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ? WHERE id = ?"

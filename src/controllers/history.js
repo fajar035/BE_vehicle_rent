@@ -8,7 +8,7 @@ const getAllHistory = (req, res) => {
   historyModel
     .getAllHistory(keyword, query)
     .then(({ status, result }) => {
-      return res.status(status).json({result})
+      return res.status(status).json({ result })
     })
     .catch(({ status, err }) => {
       res

@@ -1,14 +1,15 @@
 const express = require("express")
 const usersControllers = require("../controllers/users")
+const { checkToken } = require("../middleware/authorize")
 const usersRouter = express.Router()
 const upload = require("../middleware/upload")
 
 // const token = require("../middleware/validate")
 
-usersRouter.get("/", usersControllers.getAllProfile)
+usersRouter.get("/", checkToken, usersControllers.getAllProfile)
 usersRouter.get("/:id", usersControllers.getProfileById)
 usersRouter.post("/", usersControllers.addProfile)
-usersRouter.put("/:id", usersControllers.editProfile)
+usersRouter.put("/", checkToken, usersControllers.editProfile)
 usersRouter.delete("/:id", usersControllers.deleteProfile)
 usersRouter.post("/upload", upload.single("user"), usersControllers.uploadPhoto)
 usersRouter.get("/photo")

@@ -5,10 +5,12 @@ const usersRouter = require("./users")
 const vehicleRouter = require("./vehicle")
 const historyRouter = require("./history")
 const authRouter = require("./auth")
+const categoryRouter = require("./category")
 
 const upload = require("../middleware/upload")
 
 mainRouter.use("/users", usersRouter)
+mainRouter.use("/category", categoryRouter)
 mainRouter.use("/vehicles", vehicleRouter)
 mainRouter.use("/history", historyRouter)
 mainRouter.use("/auth", authRouter)

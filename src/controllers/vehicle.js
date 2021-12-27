@@ -1,6 +1,6 @@
 const vehicleModel = require("../models/vehicle")
+// const resHelper = require("../helpers/response")
 
-// get all vehicle
 const getAllVehicle = (req, res) => {
   const { query } = req
   let keyword = `%%`
@@ -9,7 +9,7 @@ const getAllVehicle = (req, res) => {
   vehicleModel
     .getAllVehicle(keyword, query)
     .then(({ status, result }) => {
-      return res.status(status).json({result})
+      return res.status(status).json({ result })
     })
     .catch(({ status, err }) => {
       res
@@ -18,7 +18,6 @@ const getAllVehicle = (req, res) => {
     })
 }
 
-// get vehicle by id
 const getVehicleById = (req, res) => {
   const { params } = req
   const id = params.id
@@ -36,9 +35,9 @@ const getVehicleById = (req, res) => {
     })
 }
 
-// add new vehicle
 const addVehicle = (req, res) => {
   const { body } = req
+  console.log(body)
 
   vehicleModel
     .addVehicle(body)
@@ -54,7 +53,6 @@ const addVehicle = (req, res) => {
     })
 }
 
-// edit vehicle
 const editVehicle = (req, res) => {
   const { body, params } = req
   const id = params.id
@@ -72,7 +70,6 @@ const editVehicle = (req, res) => {
     })
 }
 
-// delete vehicle
 const deleteVehicle = (req, res) => {
   const { params } = req
   const id = params.id

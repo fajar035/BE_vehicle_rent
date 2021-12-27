@@ -2,12 +2,12 @@ const usersModel = require("../models/users")
 
 // get all profile
 const getAllProfile = (req, res) => {
-  const { query } = req
+  const { query, userInfo } = req
   let keyword = `%%`
 
   if (query.cari) keyword = `'%${query.cari}%'`
   usersModel
-    .getAllProfile(keyword, query)
+    .getAllProfile(keyword, query, userInfo)
     .then(({ status, result }) => {
       return res.status(status).json({ result })
     })
@@ -63,16 +63,19 @@ const addProfile = (req, res) => {
 
 // edit profile
 const editProfile = (req, res) => {
-  const { body, params } = req
+  const { body, params, userInfo } = req
+  // console.log(userInfo)
   const id = params.id
   usersModel
-    .editProfile(id, body)
+    .editProfile(id, body, userInfo)
     .then(({ status, result }) => {
       if (status === 404)
         return res.status(status).json({
-          id: id,
-          status: status,
-          message: "User not found"
+          result: {
+            id: id,
+            status: status,
+            message: "User not found"
+          }
         })
       return res
         .status(status)
