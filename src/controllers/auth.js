@@ -1,25 +1,15 @@
 const authModel = require("../models/auth")
+const resHelper = require("../helpers/response")
 
 const register = (req, res) => {
   const { body } = req
   authModel
     .register(body)
     .then(({ status, result }) => {
-      const { email, levels } = body
-      const response = {
-        message: "Register succesccfuly",
-        result: {
-          email,
-          levels,
-          id: result.insertId
-        }
-      }
-      // console.log(err)
-      return res.status(status).json(response)
+      return resHelper.success(res, status, result)
     })
     .catch(({ status, err }) => {
-      console.log(status, err)
-      return res.status(status).json({ err })
+      resHelper.fail(res, status, err)
     })
 }
 
@@ -28,11 +18,7 @@ const login = (req, res) => {
   authModel
     .login(body)
     .then(({ status, token }) => {
-      res.status(status).json({
-        result: {
-          token: token
-        }
-      })
+      resHelper.success(res, status, { token: token })
     })
     .catch(({ status, err }) => {
       res.status(status).json({ err })

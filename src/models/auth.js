@@ -1,48 +1,79 @@
 const bcrypt = require("bcrypt")
-const { reject } = require("bcrypt/promises")
-// const res = require("express/lib/response")
 const jwt = require("jsonwebtoken")
 const db = require("../configs/db")
 
 const register = (body) => {
   return new Promise((resolve, reject) => {
-    const sqlQuery = "INSERT INTO users SET ?"
-    bcrypt
-      .hash(body.password, 10)
-      .then((hashedPassword) => {
-        const bodyWithHashedPassword = {
-          ...body,
-          password: hashedPassword
-        }
-        db.query(sqlQuery, [bodyWithHashedPassword], (err, result) => {
-          if (err) return reject({ status: 500, err })
-          resolve({ status: 201, result })
+    const { email } = body
+    const sqlInsert = "INSERT INTO users SET ?"
+    const checkEmail = "SELECT email FROM users WHERE email = ?"
+    const role = 3
+
+    db.query(checkEmail, [email], (err, result) => {
+      if (err) return reject({ status: 500, err })
+
+      if (result.length !== 0)
+        return resolve({
+          status: 501,
+          result: { message: "Email is already registered" }
         })
-      })
-      .catch((err) => {
-        reject({ status: 500, err })
-      })
+      bcrypt
+        .hash(body.password, 10)
+        .then((hashedPassword) => {
+          const bodyWithHashedPassword = {
+            ...body,
+            password: hashedPassword,
+            role
+          }
+
+          db.query(sqlInsert, [bodyWithHashedPassword], (err, result) => {
+            if (err) return reject({ status: 500, err })
+            const { name, email } = body
+            const { insertId } = result
+            resolve({
+              status: 201,
+              result: {
+                account: {
+                  id: insertId,
+                  name,
+                  email
+                },
+                message: "Registerd Successfuly"
+              }
+            })
+          })
+        })
+        .catch((err) => {
+          reject({ status: 500, err })
+        })
+    })
   })
 }
 
 const login = (body) => {
   return new Promise((resolve, reject) => {
     const { email, password } = body
-
-    // if (
-    //   typeof email == "undefined" ||
-    //   typeof password == "undefined" ||
-    //   email == "" ||
-    //   password == ""
-    // )
-    //   reject({ status: 401, err: "Wrong Email or Password" })
-
     const sqlQuery = `SELECT * FROM users WHERE email = ?`
+
     db.query(sqlQuery, [email], (err, result) => {
       if (err) return reject({ status: 500, err })
 
+      if (
+        typeof email == "undefined" ||
+        typeof password == "undefined" ||
+        email == "" ||
+        password == ""
+      )
+        return reject({
+          status: 401,
+          err: "Wrong Email or Password"
+        })
+
       if (result.length == 0)
-        return reject({ status: 401, err: "Wrong Email or Password" })
+        return reject({
+          status: 401,
+          err: "Wrong Email or Password"
+        })
 
       const hash = result[0].password
 
@@ -50,7 +81,10 @@ const login = (body) => {
         if (err) return reject(err)
 
         if (!resultCompare)
-          return reject({ status: 401, err: "Wrong Email or Password" })
+          return reject({
+            status: 401,
+            err: "Wrong Email or Password"
+          })
 
         const payload = {
           id: result[0].id,

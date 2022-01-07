@@ -1,12 +1,10 @@
-/* eslint-disable indent */
-// const { reject } = require("bcrypt/promises")
-// const res = require("express/lib/response")
 const mysql = require("mysql")
 const db = require("../configs/db")
 
 const getAllVehicle = (keyword, query) => {
   return new Promise((resolve, reject) => {
-    let sql = "SELECT * FROM vehicles"
+    let sql =
+      "SELECT vehicles.id, vehicles.name, vehicles.description, vehicles.capacity, vehicles.price,vehicles.stock, vehicles.photo, category.category, location.location, status.status FROM vehicles JOIN category ON vehicles.id_category = category.id JOIN location ON vehicles.id_location = location.id JOIN status ON vehicles.id_status = status.id"
     const statement = []
     const order = query.sort
     let orderBy = ""
@@ -32,6 +30,8 @@ const getAllVehicle = (keyword, query) => {
       const page = parseInt(query.page)
       const limit = parseInt(query.limit)
       const count = result[0].count
+      const totalPage = Math.ceil(count / limit)
+
       if (query.page && query.limit) {
         sql += " LIMIT ? OFFSET ?"
         const offset = (page - 1) * limit
@@ -49,6 +49,7 @@ const getAllVehicle = (keyword, query) => {
           : page == 1 || page == 0
           ? null
           : `/vehicles?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+        totalPage,
         count
       }
       db.query(sql, statement, (err, result) => {
@@ -58,7 +59,7 @@ const getAllVehicle = (keyword, query) => {
             status: 400,
             result: { data: "Data not found", result }
           })
-        resolve({ status: 200, result: { data: meta, result } })
+        resolve({ status: 200, result: result, meta })
       })
     })
   })
@@ -66,11 +67,12 @@ const getAllVehicle = (keyword, query) => {
 
 const getVehicleById = (id) => {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM vehicles WHERE id = ?"
+    const sql =
+      "select vehicles.id, vehicles.name, vehicles.description, vehicles.capacity, vehicles.price, vehicles.stock, vehicles.photo, category.category, location.location, status.status from vehicles join category on vehicles.id_category = category.id join location on vehicles.id_location = location.id join status on vehicles.id_status = status.id where vehicles.id = ?"
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err })
       if (result.length == 0) return resolve({ status: 404, result })
-      resolve({ status: 200, result })
+      resolve({ status: 200, result: result })
     })
   })
 }

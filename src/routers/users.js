@@ -16,7 +16,8 @@ usersRouter.post(
   upload.single("user"),
   usersControllers.uploadPhoto
 )
-usersRouter.put("/", checkToken, usersControllers.editProfile)
+
+usersRouter.patch("/", checkToken, usersControllers.editProfile)
 usersRouter.delete("/", checkToken, usersControllers.deleteProfile)
 
 module.exports = usersRouter

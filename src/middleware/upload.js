@@ -6,9 +6,9 @@ const storage = multer.diskStorage({
     cb(null, "./public/tmp")
   },
   filename: (req, file, cb) => {
-    const format = `${file.fieldname}-${Date.now()}${path.extname(
-      file.originalname
-    )}`
+    const { userInfo } = req
+    const { id } = userInfo
+    const format = `${file.fieldname}-${id}${path.extname(file.originalname)}`
     cb(null, format)
   }
 })

@@ -3,7 +3,7 @@ const express = require("express")
 const morgan = require("morgan")
 const mainRouter = require("./src/routers/mainRouter")
 const cors = require("cors")
-const path = require("path")
+const path = require("path");
 
 const server = express()
 const logger = morgan(
@@ -26,7 +26,8 @@ server.use(logger)
 server.use(mainRouter)
 server.use("/users/photo", express.static(path.join(__dirname, "public/tmp")))
 
-server.use(express.static("public/tmp"))
+// server.use(express.static("public/tmp"))
+
 server.listen(port, (req, res) => {
   console.log(`Server Running at ${host}${port}`)
 })

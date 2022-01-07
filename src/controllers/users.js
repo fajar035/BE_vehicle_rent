@@ -1,4 +1,5 @@
 const usersModel = require("../models/users")
+const resHelper = require("../helpers/response")
 
 // get all profile
 const getAllProfile = (req, res) => {
@@ -8,13 +9,11 @@ const getAllProfile = (req, res) => {
   if (query.cari) keyword = `'%${query.cari}%'`
   usersModel
     .getAllProfile(keyword, query, userInfo)
-    .then(({ status, result }) => {
-      return res.status(status).json({ result })
+    .then(({ status, result, meta }) => {
+      return resHelper.success(res, status, { result, meta })
     })
     .catch(({ status, err }) => {
-      res
-        .status(status)
-        .json({ message: "An error occurred on the server", err })
+      return resHelper.fail(res, status, { err })
     })
 }
 
@@ -25,14 +24,31 @@ const getProfileById = (req, res) => {
   usersModel
     .getProfileById(id)
     .then(({ status, result }) => {
+      const { id, name, email, dob, nohp, address, photo } = result[0]
+      const d = new Date(dob)
+      const birtday = `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
+
       if (status === 404)
-        return res.status(status).json({ message: "User not found", result })
-      return res.status(status).json({ result })
+        return resHelper.success(res, status, {
+          message: "User not found"
+        })
+      return resHelper.success(res, status, {
+        result: {
+          id,
+          name,
+          email,
+          birtday: birtday,
+          phone: nohp,
+          address,
+          photo
+        }
+      })
     })
     .catch(({ status, err }) => {
-      res
-        .status(status)
-        .json({ message: "An error occurred on the server", err })
+      return resHelper.fail(res, status, {
+        message: "An error occurred on the server",
+        err
+      })
     })
 }
 
@@ -68,22 +84,34 @@ const editProfile = (req, res) => {
   usersModel
     .editProfile(body, userInfo)
     .then(({ status, result }) => {
+      const { name, gender, dob, nohp, address } = body
+      const { id } = userInfo
       if (status === 404)
-        return res.status(status).json({
+        resHelper.success(res, status, {
           result: {
             id: id,
             status: status,
             message: "User not found"
           }
         })
-      return res
-        .status(status)
-        .json({ id: id, message: "Data updated successfully" })
+      resHelper.success(res, status, {
+        result: {
+          id,
+          name,
+          gender,
+          birtday: dob,
+          phone: nohp,
+          address
+        }
+      })
     })
     .catch(({ status, err, message }) => {
-      res
-        .status(status)
-        .json({ id: id, message, example_date: "DD-MM-YYYY", err })
+      return resHelper.fail(res, status, {
+        id: id,
+        message,
+        example_date: "DD-MM-YYYY",
+        err
+      })
     })
 }
 
@@ -96,15 +124,20 @@ const deleteProfile = (req, res) => {
     .deleteProfile(id, userInfo)
     .then(({ status, result }) => {
       if (status === 404)
-        return res.status(status).json({ id: id, message: "User not found" })
-      return res
-        .status(status)
-        .json({ id: id, message: "Data deleted successfully" })
+        return resHelper.success(res, status, {
+          id: id,
+          message: "User not found"
+        })
+      return resHelper.success(res, status, {
+        id: id,
+        message: "Data deleted successfully"
+      })
     })
     .catch(({ status, err }) => {
-      res
-        .status(status)
-        .json({ message: "An error occurred on the server", err })
+      return resHelper.fail(res, status, {
+        message: "An error occurred on the server",
+        err
+      })
     })
 }
 
@@ -120,12 +153,16 @@ const uploadPhoto = (req, res) => {
   usersModel
     .uploadPhoto(fileName, userInfo)
     .then(({ status, result }) => {
-      res.status(status).json({ message: "Upload Berhasil", result: result })
+      return resHelper.success(res, status, {
+        message: "Upload Successfuly",
+        result: result
+      })
     })
     .catch(({ status, err }) => {
-      res
-        .status(status)
-        .json({ message: "An error occurred on the server", err })
+      return resHelper.fail(res, status, {
+        message: "An error occurred on the server",
+        err
+      })
     })
 }
 
@@ -135,12 +172,13 @@ const getPhoto = (req, res) => {
   usersModel
     .getPhoto(userInfo)
     .then(({ status, result }) => {
-      res.status(status).json(result)
+      return resHelper.success(res, status, result)
     })
     .catch(({ status, err }) => {
-      res
-        .status(status)
-        .json({ message: "An error occurred on the server", err })
+      return resHelper.fail(res, status, {
+        message: "An error occurred on the server",
+        err
+      })
     })
 }
 

@@ -6,8 +6,7 @@ const moment = require("moment")
 const getAllHistory = (keyword, query) => {
   return new Promise((resolve, reject) => {
     // total = jumlah price
-    let sql =
-      "select h.id, u.name as 'name', v.name as 'vehicle', c.category ,  l.location,v.price, v.photo as 'photo',h.qty, h.start_date as 'booking date', h.return_date as 'return date', h.total, h.rating from history h join users u ON h.id_users = u.id join vehicles v ON h.id_vehicles = v.id join category c on h.id_category = c.id join location l on h.id_location = l.id"
+    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking date", h.return_date as "return date", (price * qty) as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on h.id_category = c.id join location l on h.id_location = l.id`
     const statement = []
     const order = query.sort
     let orderBy = ""
@@ -32,6 +31,7 @@ const getAllHistory = (keyword, query) => {
       const page = parseInt(query.page)
       const limit = parseInt(query.limit)
       const count = result[0].count
+      const totalPage = Math.ceil(count / limit)
       if (query.page && query.limit) {
         sql += " LIMIT ? OFFSET ?"
         const offset = (page - 1) * limit
@@ -49,16 +49,17 @@ const getAllHistory = (keyword, query) => {
           : page == 1 || page == 0
           ? null
           : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+        totalPage,
         count
       }
-      db.query(sql, statement, (err, history) => {
+      db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err })
-        if (history.length == 0)
+        if (result.length == 0)
           return resolve({
             status: 400,
-            result: { data: "Data not found", history }
+            result: { message: "Data not found", result }
           })
-        resolve({ status: 200, result: { data: meta, history } })
+        resolve({ status: 200, result, meta })
       })
     })
   })

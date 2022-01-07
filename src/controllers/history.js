@@ -1,4 +1,5 @@
 const historyModel = require("../models/history")
+const resHelper = require("../helpers/response")
 
 // get all history
 const getAllHistory = (req, res) => {
@@ -7,13 +8,11 @@ const getAllHistory = (req, res) => {
   if (query.cari) keyword = `'%${query.cari}%'`
   historyModel
     .getAllHistory(keyword, query)
-    .then(({ status, result }) => {
-      return res.status(status).json({ result })
+    .then(({ status, result, meta }) => {
+      return resHelper.success(res, status, { result, meta })
     })
     .catch(({ status, err }) => {
-      res
-        .status(status)
-        .json({ message: "An error occurred on the server", err })
+      return resHelper.fail(res, status, { err })
     })
 }
 

@@ -36,6 +36,7 @@ const getAllProfile = (keyword, query, userInfo) => {
       const page = parseInt(query.page)
       const limit = parseInt(query.limit)
       const count = result[0].count
+      const totalPage = Math.ceil(count / limit)
 
       if (query.page && query.limit) {
         sql += " LIMIT ? OFFSET ?"
@@ -43,19 +44,7 @@ const getAllProfile = (keyword, query, userInfo) => {
         statement.push(limit, offset)
       }
 
-      // const meta = {
-      //   next:
-      //     page == Math.ceil(count / limit)
-      //       ? null
-      //       : `/profile?by=id&order=asc&page=${page + 1}&limit=${limit}`,
-      //   prev:
-      //     page == 1
-      //       ? null
-      //       : `/profile?by=id&order=asc&page=${page - 1}&limit=${limit}`,
-      //   count
-      // }
-
-      const meta2 = {
+      const meta = {
         next: isNaN(page)
           ? null
           : page == Math.ceil(count / limit)
@@ -66,6 +55,7 @@ const getAllProfile = (keyword, query, userInfo) => {
           : page == 1 || page == 0
           ? null
           : `/users?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+        totalPage,
         count
       }
 
@@ -73,7 +63,10 @@ const getAllProfile = (keyword, query, userInfo) => {
         if (err) return reject({ status: 500, err })
         // const roles = "2"
         if (roles !== "2")
-          reject({ status: 401, err: "Only admin has this access" })
+          reject({
+            status: 401,
+            err: { message: "Only admin has this access" }
+          })
 
         // query page tidak ditemukan
         if (result.length == 0)
@@ -85,7 +78,7 @@ const getAllProfile = (keyword, query, userInfo) => {
             }
           })
 
-        resolve({ status: 200, result: { page: meta2, result } })
+        resolve({ status: 200, result: result, meta })
       })
     })
   })
@@ -96,6 +89,7 @@ const getProfileById = (id) => {
   return new Promise((resolve, reject) => {
     const sql =
       "SELECT id, name, email,dob, nohp, address, photo FROM users WHERE id = ?"
+
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err })
       if (result.length == 0) return resolve({ status: 404, result })
@@ -193,7 +187,7 @@ const deleteProfile = (id, userInfo) => {
       if (err) return reject({ status: 500, err })
 
       if (affectedRows == 0) return resolve({ status: 404, result })
-      resolve({ status: 200 }, result)
+      resolve({ status: 200, result })
     })
   })
 }
@@ -202,8 +196,10 @@ const deleteProfile = (id, userInfo) => {
 const uploadPhoto = (fileName, userInfo) => {
   return new Promise((resolve, reject) => {
     const { id, email } = userInfo
+
+    const filePath = `/users/photo/${fileName}`
     const sql = "UPDATE users SET photo = ? WHERE id = ?"
-    db.query(sql, [fileName, id], (err, result) => {
+    db.query(sql, [filePath, id], (err, result) => {
       if (err) return reject({ status: 500, err })
       resolve({
         status: 200,

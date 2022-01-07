@@ -1,5 +1,5 @@
 const vehicleModel = require("../models/vehicle")
-// const resHelper = require("../helpers/response")
+const resHelper = require("../helpers/response")
 
 const getAllVehicle = (req, res) => {
   const { query } = req
@@ -8,13 +8,11 @@ const getAllVehicle = (req, res) => {
   if (query.cari) keyword = `'%${query.cari}%'`
   vehicleModel
     .getAllVehicle(keyword, query)
-    .then(({ status, result }) => {
-      return res.status(status).json({ result })
+    .then(({ status, result, meta }) => {
+      return resHelper.success(res, status, { result, meta })
     })
     .catch(({ status, err }) => {
-      res
-        .status(status)
-        .json({ message: "Am error occurred on the server", err })
+      return resHelper.fail(res, status, { err })
     })
 }
 
@@ -24,14 +22,10 @@ const getVehicleById = (req, res) => {
   vehicleModel
     .getVehicleById(id)
     .then(({ status, result }) => {
-      if (status === 404)
-        return res.status(status).json({ message: "Vehicle not found", result })
-      return res.status(status).json({ result })
+      return resHelper.success(res, status, { result })
     })
     .catch(({ status, err }) => {
-      res
-        .status(status)
-        .json({ message: "An error occured on the server", err })
+      return resHelper.fail(res, status, { err })
     })
 }
 
