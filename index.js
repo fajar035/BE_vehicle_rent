@@ -3,7 +3,7 @@ const express = require("express")
 const morgan = require("morgan")
 const mainRouter = require("./src/routers/mainRouter")
 const cors = require("cors")
-const path = require("path");
+const path = require("path")
 
 const server = express()
 const logger = morgan(
@@ -14,7 +14,7 @@ const host = "http://localhost:"
 const port = 8000
 
 const corsOptions = {
-  origin: "*",
+  origin: process.env.HOSTBACKEND,
   allowedHeaders: "x-access-token",
   methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
 }

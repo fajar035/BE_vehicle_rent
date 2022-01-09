@@ -1,7 +1,7 @@
 const mysql = require("mysql")
 const db = require("../configs/db")
 
-const getAllVehicle = (keyword, query) => {
+const getAllVehicle = (keyword, query, keywordFilter) => {
   return new Promise((resolve, reject) => {
     let sql =
       "SELECT vehicles.id, vehicles.name, vehicles.description, vehicles.capacity, vehicles.price,vehicles.stock, vehicles.photo, category.category, location.location, status.status FROM vehicles JOIN category ON vehicles.id_category = category.id JOIN location ON vehicles.id_location = location.id JOIN status ON vehicles.id_status = status.id"
@@ -15,6 +15,11 @@ const getAllVehicle = (keyword, query) => {
     if (keyword.length !== 2) {
       sql += " WHERE name LIKE ?"
       statement.push(mysql.raw(keyword))
+    }
+
+    if (keywordFilter.length !== 0) {
+      sql += " WHERE category.category = ?"
+      statement.push(mysql.raw(keywordFilter))
     }
 
     if (order && orderBy) {
@@ -52,6 +57,7 @@ const getAllVehicle = (keyword, query) => {
         totalPage,
         count
       }
+
       db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err })
         if (result.length == 0)
@@ -198,10 +204,21 @@ const deleteVehicle = (id) => {
   })
 }
 
+const getLocation = (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM location WHERE id = ${id}`
+    db.query(sql, (err, result) => {
+      if (err) return reject({ status: 500, err })
+      return resolve({ status: 200, result })
+    })
+  })
+}
+
 module.exports = {
   getAllVehicle,
   getVehicleById,
   addVehicle,
   editVehicle,
-  deleteVehicle
+  deleteVehicle,
+  getLocation
 }

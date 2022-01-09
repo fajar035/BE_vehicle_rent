@@ -4,10 +4,12 @@ const resHelper = require("../helpers/response")
 const getAllVehicle = (req, res) => {
   const { query } = req
   let keyword = `%%`
+  let keywordFilter = ``
 
   if (query.cari) keyword = `'%${query.cari}%'`
+  if (query.filter) keywordFilter = `'${query.filter}'`
   vehicleModel
-    .getAllVehicle(keyword, query)
+    .getAllVehicle(keyword, query, keywordFilter)
     .then(({ status, result, meta }) => {
       return resHelper.success(res, status, { result, meta })
     })
@@ -85,10 +87,24 @@ const deleteVehicle = (req, res) => {
     })
 }
 
+const getLocation = (req, res) => {
+  const { params } = req
+  const { id } = params
+  vehicleModel
+    .getLocation(id)
+    .then(({ status, result }) => {
+      return resHelper.success(res, status, { result })
+    })
+    .catch((status, err) => {
+      return resHelper.fail(res, status, { err })
+    })
+}
+
 module.exports = {
   getAllVehicle,
   getVehicleById,
   addVehicle,
   editVehicle,
-  deleteVehicle
+  deleteVehicle,
+  getLocation
 }
