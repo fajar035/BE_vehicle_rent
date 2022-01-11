@@ -17,8 +17,8 @@ const login = (req, res) => {
   const { body } = req
   authModel
     .login(body)
-    .then(({ status, token }) => {
-      resHelper.success(res, status, { token: token })
+    .then(({ status, result }) => {
+      resHelper.success(res, status, { result })
     })
     .catch(({ status, err }) => {
       res.status(status).json({ err })

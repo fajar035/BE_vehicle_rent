@@ -88,7 +88,7 @@ const getAllProfile = (keyword, query, userInfo) => {
 const getProfileById = (id) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT id, name, email,dob, nohp, address, photo FROM users WHERE id = ?"
+      "SELECT id, name, gender,email,dob, nohp, address, photo FROM users WHERE id = ?"
 
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err })
@@ -120,10 +120,10 @@ const addProfile = (body) => {
     }
 
     const dateInput = formatDate(dateQuery)
-    // insert into users values(id, name, gender, phoneNumber, dateInput, address, photo, email,null, null )
+
     const sql =
       "INSERT INTO users VALUES(null, ? , ? , ? , ? , ? ,null, null, null)"
-    const statement = [name, gender, dateInput, nohp, address]
+    const statement = [name, gender, dob, nohp, address]
     db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, message: "Query Error", err })
       resolve({

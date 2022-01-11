@@ -100,11 +100,48 @@ const getLocation = (req, res) => {
     })
 }
 
+const uploadPhotoVehicle = (req, res) => {
+  const { id } = req.params
+  const { file } = req
+  const fileName = file.filename
+  vehicleModel
+    .uploadPhotoVehicle(fileName, id)
+    .then(({ status, result }) => {
+      return resHelper.success(res, status, {
+        message: "Upload Successfuly",
+        result: result
+      })
+    })
+    .catch(({ status, err }) => {
+      return resHelper.fail(res, status, {
+        message: "An error occurred on the server",
+        err
+      })
+    })
+}
+
+const getPhotoVehicle = (req, res) => {
+  const { id } = req.query
+
+  vehicleModel
+    .getPhotoVehicle(id)
+    .then(({ status, result }) => {
+      return resHelper.success(res, status, result)
+    })
+    .catch(({ status, err }) => {
+      return resHelper.fail(res, status, {
+        message: "An error occurred on the server"
+      })
+    })
+}
+
 module.exports = {
   getAllVehicle,
   getVehicleById,
   addVehicle,
   editVehicle,
   deleteVehicle,
-  getLocation
+  getLocation,
+  getPhotoVehicle,
+  uploadPhotoVehicle
 }

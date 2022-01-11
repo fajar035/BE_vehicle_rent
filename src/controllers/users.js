@@ -1,3 +1,4 @@
+/* eslint-disable space-before-function-paren */
 const usersModel = require("../models/users")
 const resHelper = require("../helpers/response")
 
@@ -24,9 +25,20 @@ const getProfileById = (req, res) => {
   usersModel
     .getProfileById(id)
     .then(({ status, result }) => {
-      const { id, name, email, dob, nohp, address, photo } = result[0]
-      const d = new Date(dob)
-      const birtday = `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`
+      const { id, name, gender, email, dob, nohp, address, photo } = result[0]
+
+      function formatDate(date) {
+        const d = new Date(date)
+        let month = "" + (d.getMonth() + 1)
+        let day = "" + d.getDate()
+        const year = d.getFullYear()
+
+        if (month.length < 2) month = "0" + month
+        if (day.length < 2) day = "0" + day
+
+        return [year, month, day].join("-")
+      }
+      const birtday = formatDate(dob)
 
       if (status === 404)
         return resHelper.success(res, status, {
@@ -36,8 +48,9 @@ const getProfileById = (req, res) => {
         result: {
           id,
           name,
+          gender,
           email,
-          birtday: birtday,
+          birtday,
           phone: nohp,
           address,
           photo

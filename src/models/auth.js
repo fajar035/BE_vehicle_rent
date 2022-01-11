@@ -57,6 +57,8 @@ const login = (body) => {
 
     db.query(sqlQuery, [email], (err, result) => {
       if (err) return reject({ status: 500, err })
+      console.log(result)
+      const sqlGetPhoto = `SELECT photo from users where id = ?`
 
       if (
         typeof email == "undefined" ||
@@ -93,7 +95,7 @@ const login = (body) => {
         }
 
         const jwtOptions = {
-          expiresIn: "5m",
+          expiresIn: "1d",
           issuer: process.env.ISSUER
         }
 
@@ -101,8 +103,9 @@ const login = (body) => {
           if (err) return reject({ status: 500, err })
           resolve({
             status: 200,
-            token,
-            result
+            result: {
+              token
+            }
           })
         })
       })

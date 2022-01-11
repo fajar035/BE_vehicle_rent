@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const mysql = require("mysql")
 const db = require("../configs/db")
 
@@ -214,11 +215,40 @@ const getLocation = (id) => {
   })
 }
 
+const getPhotoVehicle = (id) => {
+  return new Promise((resolve, reject) => {
+    console.log("id", id)
+    const sql = `SELECT photo FROM vehicles WHERE id = ?`
+    db.query(sql, [id], (err, result) => {
+      console.log(result)
+      if (err) return reject({ status: 500, err })
+      return resolve({ status: 200, result })
+    })
+  })
+}
+
+const uploadPhotoVehicle = (fileName, id) => {
+  return new Promise((resolve, reject) => {
+    const filePath = `/vehicles/photo/${fileName}`
+    const sql = "UPDATE vehicles SET photo = ? WHERE id = ?"
+    db.query(sql, [filePath, id], (err, result) => {
+      if (err) return reject({ status: 500, err })
+      console.log(result)
+      resolve({
+        status: 200,
+        result: { id: id, filename: fileName }
+      })
+    })
+  })
+}
+
 module.exports = {
   getAllVehicle,
   getVehicleById,
   addVehicle,
   editVehicle,
   deleteVehicle,
-  getLocation
+  getLocation,
+  getPhotoVehicle,
+  uploadPhotoVehicle
 }

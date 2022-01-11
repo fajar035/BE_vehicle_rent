@@ -15,7 +15,7 @@ const port = 8000
 
 const corsOptions = {
   origin: process.env.HOSTBACKEND,
-  allowedHeaders: "x-access-token",
+  allowedHeaders: ["x-access-token", "content-type"],
   methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
 }
 
@@ -25,6 +25,10 @@ server.use(express.json())
 server.use(logger)
 server.use(mainRouter)
 server.use("/users/photo", express.static(path.join(__dirname, "public/tmp")))
+server.use(
+  "/vehicles/photo",
+  express.static(path.join(__dirname, "public/tmp"))
+)
 
 // server.use(express.static("public/tmp"))
 
