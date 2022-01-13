@@ -15,6 +15,7 @@ const register = (req, res) => {
 
 const login = (req, res) => {
   const { body } = req
+  // console.log(req.userInfo)
   authModel
     .login(body)
     .then(({ status, result }) => {
@@ -27,8 +28,8 @@ const login = (req, res) => {
 
 const logout = (req, res) => {
   const token = req.header("x-access-token")
-  const { userInfo } = req
-  console.log(userInfo)
+  // const { userInfo } = req
+  // console.log(userInfo)
   authModel
     .logout(token)
     .then(({ status, result }) => {

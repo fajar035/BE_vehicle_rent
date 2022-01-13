@@ -24,8 +24,8 @@ const checkToken = (req, res, next) => {
           err: { message: "login your account first." }
         })
 
-      const { id, email, roles } = payload
-      req.userInfo = { id, email, roles }
+      const { id, email, roles, photo } = payload
+      req.userInfo = { id, email, roles, photo }
       next()
     })
   })

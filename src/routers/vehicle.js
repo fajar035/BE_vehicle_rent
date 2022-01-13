@@ -17,7 +17,7 @@ vehicleRouter.get("/photoVehicle", vehicleController.getPhotoVehicle)
 vehicleRouter.post(
   "/upload/:id",
   checkToken,
-  uploadVehicle.single("vehicle"),
+  uploadVehicle,
   vehicleController.uploadPhotoVehicle
 )
 

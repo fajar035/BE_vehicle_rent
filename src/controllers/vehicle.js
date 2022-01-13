@@ -102,10 +102,9 @@ const getLocation = (req, res) => {
 
 const uploadPhotoVehicle = (req, res) => {
   const { id } = req.params
-  const { file } = req
-  const fileName = file.filename
+  const { filename } = req.file
   vehicleModel
-    .uploadPhotoVehicle(fileName, id)
+    .uploadPhotoVehicle(filename, id)
     .then(({ status, result }) => {
       return resHelper.success(res, status, {
         message: "Upload Successfuly",

@@ -21,6 +21,7 @@ const getAllProfile = (req, res) => {
 // get profile by id
 const getProfileById = (req, res) => {
   const { userInfo } = req
+  // console.log(userInfo)
   const id = userInfo.id
   usersModel
     .getProfileById(id)

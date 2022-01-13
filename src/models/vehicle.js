@@ -215,7 +215,7 @@ const getLocation = (id) => {
   })
 }
 
-const getPhotoVehicle = (id) => {
+const getPhotoVehicle = (images, id) => {
   return new Promise((resolve, reject) => {
     console.log("id", id)
     const sql = `SELECT photo FROM vehicles WHERE id = ?`
@@ -227,16 +227,18 @@ const getPhotoVehicle = (id) => {
   })
 }
 
-const uploadPhotoVehicle = (fileName, id) => {
+const uploadPhotoVehicle = (filename, id) => {
   return new Promise((resolve, reject) => {
-    const filePath = `/vehicles/photo/${fileName}`
-    const sql = "UPDATE vehicles SET photo = ? WHERE id = ?"
+    console.log(filename)
+    // const filePath = prepareImages[1]
+    const sql = `UPDATE vehicles SET photo = ? WHERE id = ?`
+    const filePath = `/vehicles/photo/${filename}`
     db.query(sql, [filePath, id], (err, result) => {
       if (err) return reject({ status: 500, err })
       console.log(result)
       resolve({
         status: 200,
-        result: { id: id, filename: fileName }
+        result: { id: id, result: filePath }
       })
     })
   })

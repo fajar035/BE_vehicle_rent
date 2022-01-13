@@ -57,7 +57,7 @@ const login = (body) => {
 
     db.query(sqlQuery, [email], (err, result) => {
       if (err) return reject({ status: 500, err })
-      console.log(result)
+      // console.log(result)
       const sqlGetPhoto = `SELECT photo from users where id = ?`
 
       if (
@@ -91,7 +91,8 @@ const login = (body) => {
         const payload = {
           id: result[0].id,
           email: result[0].email,
-          roles: result[0].role
+          roles: result[0].role,
+          photo: result[0].photo
         }
 
         const jwtOptions = {
@@ -100,11 +101,14 @@ const login = (body) => {
         }
 
         jwt.sign(payload, process.env.SECRET_KEY, jwtOptions, (err, token) => {
+          const { photo, role } = result[0]
           if (err) return reject({ status: 500, err })
           resolve({
             status: 200,
             result: {
-              token
+              token,
+              photo,
+              role
             }
           })
         })
