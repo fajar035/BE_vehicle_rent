@@ -1,7 +1,5 @@
 const db = require("../configs/db")
 const resHelper = require("../helpers/response")
-const moment = require("moment")
-const { format } = require("../configs/db")
 
 const getUser = (req, res, next) => {
   const { id } = req.userInfo
