@@ -90,9 +90,10 @@ const getVehicleById = (id) => {
   })
 }
 
-const addVehicle = (body) => {
+const addVehicle = (body, inputPhoto) => {
   return new Promise((resolve, reject) => {
-    console.log(body)
+    // console.log("BODY", body)
+    // console.log("PHOTO", inputPhoto)
 
     const {
       name,
@@ -113,18 +114,28 @@ const addVehicle = (body) => {
       capacity,
       price,
       stock,
-      { photo: null },
+      inputPhoto,
       category,
       location,
       status
     ]
 
     db.query(sql, statement, (err, result) => {
-      console.log(statement)
+      // console.log(statement)
       if (err) return reject({ status: 500, err })
       resolve({
         status: 201,
-        result
+        result: {
+          name: name,
+          description: description,
+          capacity: capacity,
+          price: price,
+          stock: stock,
+          photos: JSON.parse(inputPhoto),
+          category: category,
+          location: location,
+          status: status
+        }
       })
     })
   })
@@ -233,18 +244,23 @@ const getPhotoVehicle = (images, id) => {
   })
 }
 
-const uploadPhotoVehicle = (filename, id) => {
+const uploadPhotoVehicle = (namePhotos, id) => {
   return new Promise((resolve, reject) => {
-    console.log(filename)
-    // const filePath = prepareImages[1]
+    // console.log(namePhotos)
+    const photos = namePhotos.map((item) => {
+      const filePath = `/vehicles/photo/${item}`
+      return filePath
+    })
+    const inputPhoto = JSON.stringify(photos)
+
     const sql = `UPDATE vehicles SET photo = ? WHERE id = ?`
-    const filePath = `/vehicles/photo/${filename}`
-    db.query(sql, [filePath, id], (err, result) => {
+
+    db.query(sql, [inputPhoto, id], (err, result) => {
       if (err) return reject({ status: 500, err })
-      console.log(result)
+      // console.log(result)
       resolve({
         status: 200,
-        result: { id: id, result: filePath }
+        result: { id: id, result: JSON.parse(inputPhoto) }
       })
     })
   })

@@ -6,10 +6,12 @@ const storage = multer.diskStorage({
     cb(null, "./public/tmp")
   },
   filename: (req, file, cb) => {
-    const { id } = req.params
-    const format = `${file.fieldname}-${id}${path.extname(file.originalname)}`
-    // const format2 =
-    // file.fieldname + "-" + id + path.extname(file.originalname).match(/\..$/)[0]
+    // const { id } = req.params
+    // console.log(file)
+    const format = `${file.fieldname}-${Math.random()}${path.extname(
+      file.originalname
+    )}`
+    // console.log(format)
     cb(null, format)
   }
 })
@@ -33,7 +35,7 @@ const multerOptions = {
   }
 }
 
-const multi_upload = multer(multerOptions).single("uploadPhotoVehicle")
+const multi_upload = multer(multerOptions).array("uploadPhotoVehicle", 3)
 
 const multerHandler = (req, res, next) => {
   multi_upload(req, res, (err) => {

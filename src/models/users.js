@@ -143,7 +143,7 @@ const addProfile = (body) => {
 const editProfile = (body, userInfo, bodyOld) => {
   return new Promise((resolve, reject) => {
     let { name, gender, dob, nohp, address, photo } = body
-    console.log("BODY-MODEL", photo)
+    // console.log("BODY-MODEL", photo)
     const { nameOld, genderOld, dobOld, noHpOld, addressOld, photoOld } =
       bodyOld
     const { id } = userInfo

@@ -21,7 +21,7 @@ usersRouter.post(
 usersRouter.patch(
   "/",
   checkToken,
-  upload.single("user"),
+  upload.single("photoUser"),
   getUser.getUser,
   usersControllers.editProfile
 )

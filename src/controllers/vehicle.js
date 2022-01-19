@@ -32,11 +32,25 @@ const getVehicleById = (req, res) => {
 }
 
 const addVehicle = (req, res) => {
-  const { body } = req
-  console.log(body)
+  const { body, files } = req
+  const dataPhotos = files
+  const namePhotos = []
+  if (dataPhotos) {
+    for (let index = 0; index < files.length; index++) {
+      namePhotos.push(files[index].filename)
+    }
+  }
 
+  if (namePhotos.length !== 0) {
+    const photos = namePhotos.map((item) => {
+      const filePath = `/vehicles/photo/${item}`
+      return filePath
+    })
+    // eslint-disable-next-line no-var
+    var inputPhoto = JSON.stringify(photos)
+  }
   vehicleModel
-    .addVehicle(body)
+    .addVehicle(body, inputPhoto)
     .then(({ status, result }) => {
       res
         .status(status)
@@ -102,9 +116,17 @@ const getLocation = (req, res) => {
 
 const uploadPhotoVehicle = (req, res) => {
   const { id } = req.params
-  const { filename } = req.file
+  // const { filename } = req.files
+  const photos = req.files
+  const namePhotos = []
+  // console.log("PHOTOS", photos)
+  for (let index = 0; index < photos.length; index++) {
+    namePhotos.push(photos[index].filename)
+  }
+  // console.log("NAME-PHOTOS", namePhotos)
+
   vehicleModel
-    .uploadPhotoVehicle(filename, id)
+    .uploadPhotoVehicle(namePhotos, id)
     .then(({ status, result }) => {
       return resHelper.success(res, status, {
         message: "Upload Successfuly",
