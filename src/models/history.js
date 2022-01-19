@@ -1,12 +1,13 @@
 const db = require("../configs/db")
 const mysql = require("mysql")
-const moment = require("moment")
+// const moment = require("moment")
+// const { format } = require("../configs/db")
 
 // get all history
 const getAllHistory = (keyword, query) => {
   return new Promise((resolve, reject) => {
     // total = jumlah price
-    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking date", h.return_date as "return date", (price * qty) as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on h.id_category = c.id join location l on h.id_location = l.id`
+    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", (price * qty) as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on h.id_category = c.id join location l on h.id_location = l.id`
     const statement = []
     const order = query.sort
     let orderBy = ""
@@ -21,7 +22,7 @@ const getAllHistory = (keyword, query) => {
       sql += " ORDER BY ? ?"
       statement.push(mysql.raw(orderBy), mysql.raw(order))
     }
-    console.log(orderBy)
+    // console.log(orderBy)
     // ambil total data
     const countQuery = `select count(*) as "count" from history`
     // let count
@@ -52,6 +53,7 @@ const getAllHistory = (keyword, query) => {
         totalPage,
         count
       }
+      console.log(statement)
       db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err })
         if (result.length == 0)
@@ -61,6 +63,19 @@ const getAllHistory = (keyword, query) => {
           })
         resolve({ status: 200, result, meta })
       })
+    })
+  })
+}
+
+// history by id
+const getHistoryById = (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", (price * qty) as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on h.id_category = c.id join location l on h.id_location = l.id where h.id = ?`
+
+    db.query(sql, [id], (err, result) => {
+      if (err) return reject({ status: 500, err })
+      if (result.length == 0) return resolve({ status: 404, result })
+      resolve({ status: 200, result: result })
     })
   })
 }
@@ -77,38 +92,19 @@ const newHistory = (body) => {
       start_date,
       return_date,
       total,
-      rating
+      rating,
+      testimony
     } = body
-    const sql = "INSERT INTO history VALUES(null, ?,?,?,?,?,?,?,?,?)"
 
-    const date = new Date()
-    const tgl = date.getDate()
-    const bln = date.getMonth()
-    const thn = date.getFullYear()
-    const booking_date = `${tgl}-${bln}-${thn}`
-
-    const dateBookingQuery = booking_date
-    const dateReturnQuery = return_date
-
+    const sql = "INSERT INTO history VALUES(null, ?,?,?,?,?,?,?,?,?,?)"
     const formatDate = (date) => {
       const dateStr = date.split("-")
       return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0]
     }
 
-    if (typeof dateReturnQuery == "undefined")
-      return reject({ status: 500, message: "Data cannot be empty!" })
-
-    const dataCheck = moment(
-      dateBookingQuery || dateReturnQuery,
-      "DD-MM-YYYY",
-      true
-    ).isValid()
-
-    if (dataCheck == false)
-      return reject({ status: 500, message: "Wrong input date" })
-
-    const dateInputBooking = formatDate(dateBookingQuery)
-    const dateInputReturn = formatDate(dateReturnQuery)
+    const dateInputBooking = formatDate(start_date)
+    const dateInputReturn = formatDate(return_date)
+    // INSERT INTO `vehicle_rent`.`history` (`id_users`, `id_vehicles`, `id_category`, `id_location`, `qty`, `start_date`, `return_date`, `total`, `rating`, `testimony`) VALUES ('80', '5', '3', '6', '1', '2022-01-10', '2022-02-24', '1', '5', 'Mantab');
 
     const statement = [
       id_users,
@@ -119,12 +115,13 @@ const newHistory = (body) => {
       dateInputBooking,
       dateInputReturn,
       total,
-      rating
+      rating,
+      testimony
     ]
 
     db.query(sql, statement, (err, result) => {
+      console.log(sql, statement)
       if (err) return reject({ status: 500, err })
-
       resolve({
         status: 201,
         result: {
@@ -138,7 +135,8 @@ const newHistory = (body) => {
           start_date,
           return_date,
           total,
-          rating
+          rating,
+          testimony
         }
       })
     })
@@ -161,12 +159,7 @@ const deleteHistory = (id) => {
 // popular vehicles by rating
 const popular = () => {
   return new Promise((resolve, reject) => {
-    const sql = `select h.id, u.name as 'name', v.name as 'vehicle', c.category ,  l.location,v.price, v.photo as 'photo',
-    h.qty, h.start_date as 'booking date', h.return_date as 'return date', h.total, h.rating 
-    from history h join users u ON h.id_users = u.id 
-    join vehicles v ON h.id_vehicles = v.id 
-    join category c on h.id_category = c.id join location l on h.id_location = l.id
-    where h.rating = 5 order by h.rating`
+    const sql = `select h.id, u.name as 'name', v.name as 'vehicle', c.category ,  l.location,v.price, v.photo as 'photo', h.qty, h.start_date as 'booking date', h.return_date as 'return date', h.total, h.rating from history h join users u ON h.id_users = u.id join vehicles v ON h.id_vehicles = v.id join category c on h.id_category = c.id join location l on h.id_location = l.id where h.rating = 5 order by h.rating`
 
     db.query(sql, (err, result) => {
       // console.log(err, result)
@@ -180,5 +173,6 @@ module.exports = {
   getAllHistory,
   newHistory,
   deleteHistory,
-  popular
+  popular,
+  getHistoryById
 }

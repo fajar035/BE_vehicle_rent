@@ -1,7 +1,6 @@
 /* eslint-disable indent */
 const mysql = require("mysql")
 const db = require("../configs/db")
-const moment = require("moment")
 
 // get all Profile, by order id & name
 const getAllProfile = (keyword, query, userInfo) => {
@@ -141,34 +140,63 @@ const addProfile = (body) => {
 }
 
 // edit profile
-const editProfile = (body, userInfo) => {
+const editProfile = (body, userInfo, bodyOld) => {
   return new Promise((resolve, reject) => {
-    const { name, gender, dob, nohp, address } = body
+    let { name, gender, dob, nohp, address, photo } = body
+    console.log("BODY-MODEL", photo)
+    const { nameOld, genderOld, dobOld, noHpOld, addressOld, photoOld } =
+      bodyOld
     const { id } = userInfo
-    const dateQuery = dob
+
+    // console.log("FILE-PHOTO", file.filename)
 
     const formatDate = (date) => {
       const dateStr = date.split("-")
       return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0]
     }
-    if (typeof dateQuery == "undefined")
-      return reject({ status: 404, message: "Data cannot be empty!" })
 
-    const dataCheck = moment(dateQuery, "DD-MM-YYYY", true).isValid()
+    let dateQuery = dob
 
-    if (dataCheck == false)
-      return reject({ status: 500, message: "Wrong input date" })
+    if (!name) {
+      name = nameOld
+    }
+    if (!gender) {
+      gender = genderOld
+    }
+    if (!dateQuery) {
+      dateQuery = dobOld
+    }
+    if (!nohp) {
+      nohp = noHpOld
+    }
+    if (!address) {
+      address = addressOld
+    }
+    if (!photo) {
+      photo = photoOld
+    }
 
     const dateInput = formatDate(dateQuery)
-    const statement = [name, gender, dateInput, nohp, address, id]
+
+    const statement = [name, gender, dateInput, nohp, address, photo, id]
 
     const sql =
-      "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ? WHERE id = ?"
+      "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ?, photo = ? WHERE id = ?"
     db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, err })
       const { affectedRows } = result
       if (affectedRows == 0) return resolve({ status: 404, result })
-      resolve({ status: 200, result })
+      resolve({
+        status: 200,
+        result: {
+          name: name,
+          gender: gender,
+          dob: dateInput,
+          noHp: nohp,
+          address: address,
+          photo: photo
+        }
+      })
     })
   })
 }

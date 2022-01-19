@@ -23,6 +23,12 @@ const getAllVehicle = (keyword, query, keywordFilter) => {
       statement.push(mysql.raw(keywordFilter))
     }
 
+    // if(keywordPopular.length !== 0){
+    //   sql += " WHERE category.category = ?"
+    //   statement.push(mysql.raw(keywordFilter))
+
+    // }
+
     if (order && orderBy) {
       sql += " ORDER BY ? ?"
       statement.push(mysql.raw(orderBy), mysql.raw(order))

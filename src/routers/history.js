@@ -6,7 +6,7 @@ const historyRouter = express.Router()
 historyRouter.get("/", historyController.getAllHistory)
 
 // get data by id
-// historyRouter.get("/:id", historyController.getHistoryById)
+historyRouter.get("/popular/:id", historyController.getHistoryById)
 
 // new data history
 historyRouter.post("/", historyController.newHistory)

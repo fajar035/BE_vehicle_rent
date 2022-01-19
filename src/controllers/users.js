@@ -93,12 +93,26 @@ const addProfile = (req, res) => {
 
 // edit profile
 const editProfile = (req, res) => {
-  const { body, userInfo } = req
-  const { id } = userInfo
+  let { body, userInfo, bodyOld, file } = req
+  // console.log("FILE", file)
+  // console.log("BODY", body)
+
+  if (!file) {
+    body = {
+      ...body
+    }
+  } else {
+    body = {
+      ...body,
+      photo: `/users/photo/${file.filename}`
+    }
+  }
+
   usersModel
-    .editProfile(body, userInfo)
+    .editProfile(body, userInfo, bodyOld)
     .then(({ status, result }) => {
-      const { name, gender, dob, nohp, address } = body
+      // const { name, gender, dob, nohp, address } = body
+      // console.log("BODY", body)
       const { id } = userInfo
       if (status === 404)
         resHelper.success(res, status, {
@@ -108,22 +122,33 @@ const editProfile = (req, res) => {
             message: "User not found"
           }
         })
-      resHelper.success(res, status, {
-        result: {
-          id,
-          name,
-          gender,
-          birtday: dob,
-          phone: nohp,
-          address
-        }
+      resHelper.success(res, status, { Message: "Update Successfuly", result })
+    })
+    .catch(({ status, err }) => {
+      return resHelper.fail(res, status, { err })
+    })
+}
+
+// upload photo
+const uploadPhoto = (req, res) => {
+  // res.status(200).json({message: "Upload Berhasil", url: req.file})
+  const { userInfo } = req
+  // const { id } = body
+  const { file } = req
+  // console.log(file)
+
+  const fileName = file.filename
+  usersModel
+    .uploadPhoto(fileName, userInfo)
+    .then(({ status, result }) => {
+      return resHelper.success(res, status, {
+        message: "Upload Successfuly",
+        result: result
       })
     })
-    .catch(({ status, err, message }) => {
+    .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
-        id: id,
-        message,
-        example_date: "DD-MM-YYYY",
+        message: "An error occurred on the server",
         err
       })
     })
@@ -145,31 +170,6 @@ const deleteProfile = (req, res) => {
       return resHelper.success(res, status, {
         id: id,
         message: "Data deleted successfully"
-      })
-    })
-    .catch(({ status, err }) => {
-      return resHelper.fail(res, status, {
-        message: "An error occurred on the server",
-        err
-      })
-    })
-}
-
-// upload photo
-const uploadPhoto = (req, res) => {
-  // res.status(200).json({message: "Upload Berhasil", url: req.file})
-  const { userInfo } = req
-  // const { id } = body
-  const { file } = req
-  // console.log(file)
-
-  const fileName = file.filename
-  usersModel
-    .uploadPhoto(fileName, userInfo)
-    .then(({ status, result }) => {
-      return resHelper.success(res, status, {
-        message: "Upload Successfuly",
-        result: result
       })
     })
     .catch(({ status, err }) => {

@@ -14,7 +14,7 @@ const host = "http://localhost:"
 const port = 8000
 
 const corsOptions = {
-  origin: process.env.HOSTBACKEND,
+  origin: [process.env.HOSTBACKEND, "https://vehicle-react.netlify.app"],
   allowedHeaders: ["x-access-token", "content-type"],
   methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
 }
