@@ -3,6 +3,7 @@ const vehicleController = require("../controllers/vehicle")
 const { checkToken } = require("../middleware/authorize")
 const vehicleRouter = express.Router()
 const uploadVehicle = require("../middleware/uploadVehicle")
+const { getVehicle } = require("../middleware/vehicles")
 
 vehicleRouter.get("/", vehicleController.getAllVehicle)
 
@@ -14,6 +15,7 @@ vehicleRouter.patch(
   "/:id",
   checkToken,
   uploadVehicle,
+  getVehicle,
   vehicleController.editVehicle
 )
 

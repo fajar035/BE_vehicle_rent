@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.27, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.27, for Win64 (x86_64)
 --
 -- Host: localhost    Database: vehicle_rent
 -- ------------------------------------------------------
@@ -81,8 +81,9 @@ CREATE TABLE `history` (
   `return_date` date DEFAULT NULL,
   `total` varchar(255) DEFAULT NULL,
   `rating` varchar(255) DEFAULT NULL,
+  `testimony` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,7 +92,7 @@ CREATE TABLE `history` (
 
 LOCK TABLES `history` WRITE;
 /*!40000 ALTER TABLE `history` DISABLE KEYS */;
-INSERT INTO `history` VALUES (1,1,1,2,1,'1','2021-12-26','2022-01-02','1','5'),(2,2,2,2,2,'1','2021-12-26','2022-01-05','1','5'),(3,2,3,2,3,'1','2021-12-26','2022-01-05','1','5'),(4,2,3,2,4,'1','2021-12-26','2022-01-05','1','3'),(6,3,10,3,5,'1','2021-11-28','2021-12-28','1','5');
+INSERT INTO `history` VALUES (1,75,1,2,1,'3','2021-12-26','2022-01-02','1','5',NULL),(2,76,2,2,2,'1','2021-12-26','2022-01-05','1','5',NULL),(3,77,3,2,3,'1','2021-12-26','2022-01-05','1','5',NULL),(4,78,3,2,4,'1','2021-12-26','2022-01-05','1','3',NULL),(6,3,10,3,5,'1','2021-11-28','2021-12-28','1','5',NULL),(8,80,6,3,5,'1','2012-10-20','2021-12-28','1','5','mantab'),(9,80,6,3,5,'1','2012-10-20','2021-12-28','1','5','mantab');
 /*!40000 ALTER TABLE `history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -144,6 +145,32 @@ INSERT INTO `status` VALUES (1,'Available'),(2,'Full Booked');
 UNLOCK TABLES;
 
 --
+-- Table structure for table `testimony`
+--
+
+DROP TABLE IF EXISTS `testimony`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `testimony` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `testimony` varchar(255) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `rate` varchar(255) DEFAULT NULL,
+  `id_history` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `testimony`
+--
+
+LOCK TABLES `testimony` WRITE;
+/*!40000 ALTER TABLE `testimony` DISABLE KEYS */;
+/*!40000 ALTER TABLE `testimony` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `users`
 --
 
@@ -162,7 +189,7 @@ CREATE TABLE `users` (
   `password` varchar(255) DEFAULT NULL,
   `role` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -171,7 +198,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (12,'Fajar Pratama','Pria','1978-04-21','09292239429','Jalan Kutilang No 10A','/users/photo/user-1640678453619.png','fajarp300@gmail.com','$2b$10$ovDS4zjsN.eQDDNr1SReFuWYQGcOWemaaadULvL.5DuGJWHmb8w3G','1'),(13,'Fajar Pratama','Pria','1978-04-21','09292239429','Jalan Kutilang No 10A','/users/photo/user-1640754148163.png','email@email.com','$2b$10$.ubxEy56nnQICxSuedv9D.B7TpZ9StxAPup.nGFBPobYRXVTyW6B6','2'),(14,'Coba Email','Wanita','2000-01-01','08329234829','Perumahan Pondok indah Blok H No 10','user-1640598706871.png','coba@email.com','$2b$10$ftMmPt1HLLThu.spAxeKp.pjFGnFRWEf9KEvNxcVyvLkBQTEgzYaK','2'),(16,'User2','Pria','1972-04-21','085692389138','Jalan User3 No 31','user-1640599587598.svg','user2@email.com','$2b$10$cnYiQy83CmZy.Kz.9NJvne8xhYhCw/pU4ugyN2ZKZtVEtLn8oP2DC','3'),(18,NULL,NULL,NULL,NULL,NULL,NULL,'user@email.com','$2b$10$DxGpBvChnPmcM9xo9Ycp9u8l6xlQkESnzWsMWUTYxJ0et1/tM.66u','3'),(19,NULL,NULL,NULL,NULL,NULL,NULL,'user@email.com','$2b$10$hCY/WTX3SZU2fX9rX3bJRuILEdND6o0xbH8EVAC3sxOr5SAAwYTzC','3'),(20,'user',NULL,NULL,NULL,NULL,NULL,'user@email.com','$2b$10$V0hGr98q1gm6DjXz.8N8p.LzNzBomcTp9F1/lAAvNhlErNtZJsVy2',NULL),(21,'user',NULL,NULL,NULL,NULL,NULL,'user@email.com','$2b$10$V3iUBy6tLglNgYvN5w9RN.ug/MP98da.yJG3AEBP8ONDhoLD5/UXG',NULL),(22,'user',NULL,NULL,NULL,NULL,NULL,'user@email.com','$2b$10$DixnVpp4PQ4H7r0eBzEDZuZk1Ijv9Ff4/.yddE2VjyGJNsSiN8dly',NULL),(23,'user',NULL,NULL,NULL,NULL,NULL,'user@email.com','$2b$10$RtZBqtNpavIquI69jRFwR.5Mvo13u3b1sGiGHB48Bd9P5BiH2eVhC',NULL),(24,'user',NULL,NULL,NULL,NULL,NULL,'user@email.com','$2b$10$YSgVuCi2TZ.QdLM3iS/zIeCKmknAss6jV8xvFXuu7m6HhKsylfxbe','2');
+INSERT INTO `users` VALUES (75,'user',NULL,NULL,NULL,NULL,NULL,'user@email.com','$2b$10$Q./h80camARzF.16yFrmeODzZnXknK7dvtL4ghhOqDXkt5FyNymN.','3'),(76,'user2',NULL,NULL,NULL,NULL,NULL,'user2@email.com','$2b$10$vB4PYh7TbS9gVG/MAbBNzuXFmkFWzm8BCpxnEJt120h9GNRspgGDe','3'),(77,'user3',NULL,NULL,NULL,NULL,NULL,'user3@email.com','$2b$10$et5FSfLLQUBOzQX920Su3O8nktgLrNGh6O4qxKhGZJ4VrmVV18jMu','3'),(78,'Fajar Pratama','Pria','1994-05-22','081213971331','Jalan Singgalang Blok Q No 8','/users/photo/photoUser-78.jpg','admin@gmail.com','$2b$10$AzU2RDwhftMH9ZYIXZk00.rLn1ntN9d74c6JUfHreNnBdlf4W0vim','2'),(79,'Fajar Pratama',NULL,NULL,NULL,NULL,NULL,'fajarp300@gmail.com','$2b$10$wno3DKbz6PjZNiD2LBe8b.7H0Sob9c7PYOGMeOXfXvSt4tHOnI0Gq','3'),(80,'Prayuni',NULL,NULL,NULL,NULL,NULL,'yuniaja@gmail.com','$2b$10$cy9w4zJEAmtIlL0ZocRX1OLba/QSY/AnFpZMcXRVdfaHnadom2It2','3'),(81,'Siti Nurhaliman',NULL,NULL,NULL,NULL,NULL,'siti@gmail.com','$2b$10$YilUsvfGr/CNNiYe7Y9zweP7M2goFWZASOL7K.IDRT6j4AcQCup7W','3'),(82,'ikehikeh151',NULL,NULL,NULL,NULL,NULL,'ikehikeh151@gmail.com','$2b$10$TqzyTJB0Xp5sS.cQOUkYNexGU7T6WqyLUFXqZR0f8FBYwobgkjxWO','3'),(83,'Fajar Pratama Vishinggah',NULL,NULL,NULL,NULL,'/users/photo/user-83.png','fajarp300@icloud.com','$2b$10$nxs3svVTP7D6d6SU3CbVpOeK4zu7okO/xGjx6D7DQoBDBzqL3DIAC','3'),(84,'Kurniawan',NULL,NULL,NULL,NULL,NULL,'kurniawan@gmail.com','$2b$10$09u4WpnCljdANnJ0v6CAa.Ksho6KzUZkn6JG0WSeWx7QREt/NjTP.','3'),(85,'',NULL,NULL,NULL,NULL,NULL,'','$2b$10$L9Y8TBXws0uL4mZZqFgIA.VPy0On1TA7jpGlagfkSpmniBLPOqbFq','3'),(86,'genta',NULL,NULL,NULL,NULL,NULL,'genta@gmail.com','$2b$10$7GU3Ye/E2s7CC21NBTapuuldXjYoilM.igo8u07AL.OZlUsTZGrWq','3'),(87,'digitalenLMS',NULL,NULL,NULL,NULL,NULL,'dhojar10@gmail.com','$2b$10$/..qTzqG1KmoE10q6pe5YOywEPiQl1zsSLDmGInDfJ5koOCkZ/VO.','3'),(88,'digitalenLMS',NULL,NULL,NULL,NULL,NULL,'dhojar10@gmail.com','$2b$10$gmskGJwxxBS.mog1S/F/0.o16ZiGTPkvjUJv29WSUhTH5WFQF1Gd2','3'),(89,'fajarp300',NULL,NULL,NULL,NULL,NULL,'dasdsad','$2b$10$cg2K6JM08dtshM2RLeXhVO16w1Qling4Te3e2fU5etYMNNMQ1OpaK','3'),(90,'Husnul Khotimah',NULL,NULL,NULL,NULL,NULL,'husnul@gmail.com','$2b$10$JczrR1eEpm6v7VaFwigP9eqb0VfwOtPa3sPTDu6pHfeOmM43tDq4.','3'),(91,'Sintia',NULL,NULL,NULL,NULL,NULL,'sintia@gmail.com','$2b$10$y1kMJFTL0Q3WV6KTJ8YZKewYmNWAvtRbJEx/KCh3zqgQP0g1gmlGO','3');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -200,7 +227,7 @@ CREATE TABLE `vehicles` (
   CONSTRAINT `fk_vehicles_1` FOREIGN KEY (`id_location`) REFERENCES `location` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_vehicles_2` FOREIGN KEY (`id_status`) REFERENCES `status` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_vehicles_3` FOREIGN KEY (`id_category`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,7 +236,7 @@ CREATE TABLE `vehicles` (
 
 LOCK TABLES `vehicles` WRITE;
 /*!40000 ALTER TABLE `vehicles` DISABLE KEYS */;
-INSERT INTO `vehicles` VALUES (1,'Vario 150','Irit bensin dan bertenaga','2','120000','5','vario.jpg',2,1,1),(2,'Beat Street','Irit bensin','2','70000','10','beat.jpg',2,2,1),(3,'Mx - King 150','Larinya kenceng','2','90000','7','mk-king.jpg',2,4,1),(4,'Yamaha MX-king 150','Motor bebek berkopling dan bertenaga','2','200000','mxking.jpg','0',2,1,1),(5,'Yamaha MX-king 150','Motor bebek berkopling dan bertenaga','2','200000','mxking.jpg','0',3,1,1),(6,'Yamaha MX-king 150','Motor bebek berkopling dan bertenaga','2','200000','mxking.jpg','0',2,1,1),(7,'Yamaha MX-king 150','Motor bebek berkopling dan bertenaga','2','200000','mxking.jpg','0',NULL,1,1),(8,'Yamaha MX-king 150','Motor bebek berkopling dan bertenaga','2','200000','mxking.jpg','0',2,1,1),(9,'Honda Jazz','Bobil Bergaya cocok untuk anak muda','5','450000','jazz.js','4',3,4,1),(10,'Volvo','Mobil Bergaya jaman dulu cocok untuk anak muda','3','300000','10',NULL,3,1,1);
+INSERT INTO `vehicles` VALUES (1,'Vario 150','Irit bensin dan bertenaga','2','120000','5','/vehicles/photo/vehicle-1.jpg',2,1,1),(2,'Beat Street','Irit bensin','2','70000','10','/vehicles/photo/vehicle-2.png',2,2,1),(3,'Honda Blade','Motor bebek yang tangguh','2','90000','7','/vehicles/photo/vehicle-3.jpg',2,4,1),(4,'Yamaha R-15','Motor soprt jiwa anak muda','2','100000','10','/vehicles/photo/vehicle-4.jpg',2,1,1),(5,'All New Xenia','tekhnologi baru','6','230000','3','/vehicles/photo/vehicle-5.jpg',3,3,1),(6,'Avanza','Mobil keluarga','6','190000','5','/vehicles/photo/vehicle-6.jpg',3,1,1),(7,'Civic','Mobil Modern jiwa anak muda','4','200000','4','/vehicles/photo/vehicle-7.jpg',3,1,1),(8,'City','mobil sedan yang modern','4','200000','2','/vehicles/photo/vehicle-8.jpeg',3,1,1),(9,'Bmx','Sepeda kuat dan bergaya','1','450000','7','/vehicles/photo/vehicle-9.jpg',1,4,1),(10,'Siionmic mtb26','Sepeda Gunung','1','300000','10','/vehicles/photo/vehicle-10.jpg',1,1,1),(11,'Polygon Claire 24','Sepeda untuk bergaya','1','40000','5','/vehicles/photo/vehicle-11.jpg',1,2,1),(12,'Sepeda Listrik','Sepeda menggunakan aki','2','30000','5','[\"/vehicles/photo/uploadPhotoVehicle-0.17494887744949095.png\",\"/vehicles/photo/uploadPhotoVehicle-0.2181381803538025.png\",\"/vehicles/photo/uploadPhotoVehicle-0.03784836208609388.png\"]',1,3,1),(36,'Volvo','Mobil Bergaya jaman dulu cocok untuk anak muda','3','300000','10',NULL,3,1,1),(37,'Volvo','Mobil Bergaya jaman dulu cocok untuk anak muda','3','300000','10',NULL,3,1,1),(38,'Suziki Escudo','Mobil Super Kencang','4','250000','5','[\"/vehicles/photo/uploadPhotoVehicle-0.877359056559462.png\",\"/vehicles/photo/uploadPhotoVehicle-0.3867554251156997.png\",\"/vehicles/photo/uploadPhotoVehicle-0.23754510252818406.png\"]',3,6,1),(39,'Suziki Escudo','Mobil Super Kencang','4','250000','5','[\"/vehicles/photo/uploadPhotoVehicle-0.16148150983521714.png\",\"/vehicles/photo/uploadPhotoVehicle-0.4442973053077919.png\",\"/vehicles/photo/uploadPhotoVehicle-0.9934330762955654.png\"]',3,6,1),(40,'Suziki Escudo','Mobil Super Kencang','4','250000','5','[\"/vehicles/photo/uploadPhotoVehicle-0.8735199472926298.png\",\"/vehicles/photo/uploadPhotoVehicle-0.5481038670028306.png\",\"/vehicles/photo/uploadPhotoVehicle-0.5386967482766516.png\"]',3,6,1);
 /*!40000 ALTER TABLE `vehicles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -222,4 +249,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-12-31  0:59:39
+-- Dump completed on 2022-01-20 12:11:35

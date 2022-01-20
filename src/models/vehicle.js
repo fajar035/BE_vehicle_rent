@@ -141,7 +141,7 @@ const addVehicle = (body, inputPhoto) => {
   })
 }
 
-const editVehicle = (id, body) => {
+const editVehicle = (id, body, inputPhoto) => {
   return new Promise((resolve, reject) => {
     const {
       name,
@@ -155,7 +155,7 @@ const editVehicle = (id, body) => {
     } = body
 
     const sql =
-      "UPDATE vehicles SET name = ?, description = ?, capacity = ?, price = ?, stock = ?, category = ?, location = ?, status = ? WHERE id = ?"
+      "UPDATE vehicles SET name = ?, description = ?, capacity = ?, price = ?, stock = ?, photo = ?, category = ?, location = ?, status = ? WHERE id = ?"
 
     const statement = [
       name,
@@ -163,35 +163,18 @@ const editVehicle = (id, body) => {
       capacity,
       price,
       stock,
+      photos,
       category,
       location,
       status,
       id
     ]
 
-    db.query(sql, statement, (err, result) => {
-      if (
-        typeof name == "undefined" ||
-        name.length == 0 ||
-        typeof description == "undefined" ||
-        description.length == 0 ||
-        typeof capacity == "undefined" ||
-        capacity.length == 0 ||
-        typeof price == "undefined" ||
-        price.length == 0 ||
-        typeof stock == "undefined" ||
-        stock.length == 0 ||
-        typeof category == "undefined" ||
-        category.length == 0 ||
-        typeof location == "undefined" ||
-        location.length == 0 ||
-        typeof status == "undefined" ||
-        status.length == 0
-      )
-        if (err == null)
-          return reject({ status: 500, message: "Data cannot be empty!" })
-      console.log(result)
-      resolve({
+    db.query(sql, (err, result) => {
+      if (err) return reject({ status: 500, err })
+      const { affectedRows } = result
+      if (affectedRows == 0) return resolve({ status: 404, result })
+      return resolve({
         status: 200,
         message: "Successfuly changed data",
         result: {

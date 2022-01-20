@@ -64,19 +64,41 @@ const addVehicle = (req, res) => {
 }
 
 const editVehicle = (req, res) => {
-  const { body, params } = req
+  const { body, params, bodyOld, files } = req
   const id = params.id
 
+  // const dataPhotos = files
+  // const namePhotos = []
+  // if (dataPhotos) {
+  //   for (let index = 0; index < files.length; index++) {
+  //     namePhotos.push(files[index].filename)
+  //   }
+  // }
+
+  // if (namePhotos.length !== 0) {
+  //   const photos = namePhotos.map((item) => {
+  //     const filePath = `/vehicles/photo/${item}`
+  //     return filePath
+  //   })
+  //   // eslint-disable-next-line no-var
+  //   var inputPhoto = JSON.stringify(photos)
+  //   console.log(inputPhoto)
+  // }
   vehicleModel
     .editVehicle(id, body)
-    .then(({ status, result, message }) => {
-      res.status(status).json({
-        message,
-        result
-      })
+    .then(({ status, result }) => {
+      if (status === 404)
+        resHelper.success(res, status, {
+          result: {
+            id: id,
+            status: status,
+            message: "User not found"
+          }
+        })
+      resHelper.success(res, status, { result })
     })
-    .catch(({ status, message }) => {
-      res.status(status).json({ status, message })
+    .catch(({ status, err }) => {
+      resHelper.fail(res, status, { err })
     })
 }
 

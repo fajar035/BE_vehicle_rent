@@ -11,7 +11,7 @@ const logger = morgan(
 )
 
 const host = "http://localhost:"
-const port = 8000
+const port = process.env.PORT || 8000
 
 const corsOptions = {
   origin: [process.env.HOSTBACKEND, "https://vehicle-react.netlify.app"],
