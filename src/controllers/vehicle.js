@@ -64,29 +64,38 @@ const addVehicle = (req, res) => {
 }
 
 const editVehicle = (req, res) => {
-  const { body, params, bodyOld, files } = req
+  let { body, params, files, bodyOld } = req
   const id = params.id
+  const dataPhotos = files
+  const namePhotos = []
+  if (dataPhotos) {
+    for (let index = 0; index < files.length; index++) {
+      namePhotos.push(files[index].filename)
+    }
+  }
+  if (namePhotos.length !== 0) {
+    const photos = namePhotos.map((item) => {
+      const filePath = `/vehicles/photo/${item}`
+      return filePath
+    })
+    // eslint-disable-next-line no-var
+    var inputPhoto = JSON.stringify(photos)
+  }
 
-  // const dataPhotos = files
-  // const namePhotos = []
-  // if (dataPhotos) {
-  //   for (let index = 0; index < files.length; index++) {
-  //     namePhotos.push(files[index].filename)
-  //   }
-  // }
+  if (dataPhotos) {
+    body = {
+      ...body,
+      photos: inputPhoto
+    }
+  } else {
+    body = {
+      ...body
+    }
+  }
 
-  // if (namePhotos.length !== 0) {
-  //   const photos = namePhotos.map((item) => {
-  //     const filePath = `/vehicles/photo/${item}`
-  //     return filePath
-  //   })
-  //   // eslint-disable-next-line no-var
-  //   var inputPhoto = JSON.stringify(photos)
-  //   console.log(inputPhoto)
-  // }
   vehicleModel
-    .editVehicle(id, body)
-    .then(({ status, result }) => {
+    .editVehicle(id, body, bodyOld)
+    .then(({ status, result, message }) => {
       if (status === 404)
         resHelper.success(res, status, {
           result: {
@@ -95,10 +104,10 @@ const editVehicle = (req, res) => {
             message: "User not found"
           }
         })
-      resHelper.success(res, status, { result })
+      resHelper.success(res, status, { message, result })
     })
     .catch(({ status, err }) => {
-      resHelper.fail(res, status, { err })
+      return resHelper.fail(res, status, { err })
     })
 }
 

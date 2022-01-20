@@ -141,9 +141,9 @@ const addVehicle = (body, inputPhoto) => {
   })
 }
 
-const editVehicle = (id, body, inputPhoto) => {
+const editVehicle = (id, body, bodyOld) => {
   return new Promise((resolve, reject) => {
-    const {
+    let {
       name,
       description,
       capacity,
@@ -151,12 +151,35 @@ const editVehicle = (id, body, inputPhoto) => {
       stock,
       category,
       location,
-      status
+      status,
+      photos
     } = body
+    console.log(photos)
+
+    const {
+      nameOld,
+      descriptionOld,
+      capacityOld,
+      priceOld,
+      stockOld,
+      photoOld,
+      id_categoryOld,
+      id_locationOld,
+      id_statusOld
+    } = bodyOld
+
+    if (!name) return (name = nameOld)
+    if (!description) return (description = descriptionOld)
+    if (!capacity) return (capacity = capacityOld)
+    if (!price) return (price = priceOld)
+    if (!stock) return (stock = stockOld)
+    if (!photos) return (photos = photoOld)
+    if (!category) return (category = id_categoryOld)
+    if (!location) return (location = id_locationOld)
+    if (!status) return (status = id_statusOld)
 
     const sql =
-      "UPDATE vehicles SET name = ?, description = ?, capacity = ?, price = ?, stock = ?, photo = ?, category = ?, location = ?, status = ? WHERE id = ?"
-
+      "UPDATE vehicles SET name = ?, description = ?, capacity = ?, price = ?, stock = ?, photo = ?, id_category = ?, id_location = ?, id_status = ? WHERE id = ?"
     const statement = [
       name,
       description,
@@ -169,8 +192,8 @@ const editVehicle = (id, body, inputPhoto) => {
       status,
       id
     ]
-
-    db.query(sql, (err, result) => {
+    console.log("STATEMENT", statement)
+    db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, err })
       const { affectedRows } = result
       if (affectedRows == 0) return resolve({ status: 404, result })
@@ -178,15 +201,16 @@ const editVehicle = (id, body, inputPhoto) => {
         status: 200,
         message: "Successfuly changed data",
         result: {
-          id,
-          name,
-          description,
-          capacity,
-          price,
-          stock,
-          category,
-          location,
-          status
+          id: id,
+          name: name,
+          description: description,
+          capacity: capacity,
+          price: price,
+          stock: stock,
+          photos: JSON.parse(photos),
+          category: category,
+          location: location,
+          status: status
         }
       })
     })

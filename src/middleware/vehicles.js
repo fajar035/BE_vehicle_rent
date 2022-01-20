@@ -50,15 +50,15 @@ const getVehicle = (req, res, next) => {
 
     const bodyOld = {
       id: id,
-      name: name,
-      description: description,
-      capacity: capacity,
-      price: price,
-      stock: stock,
-      photo: photo,
-      id_category: id_category,
-      id_location: id_location,
-      id_status
+      nameOld: name,
+      descriptionOld: description,
+      capacityOld: capacity,
+      priceOld: price,
+      stockOld: stock,
+      photoOld: photo,
+      id_categoryOld: id_category,
+      id_locationOld: id_location,
+      id_statusOld: id_status
     }
     req.bodyOld = bodyOld
     next()

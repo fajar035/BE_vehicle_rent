@@ -110,7 +110,7 @@ const editProfile = (req, res) => {
 
   usersModel
     .editProfile(body, userInfo, bodyOld)
-    .then(({ status, result }) => {
+    .then(({ status, result, message }) => {
       // const { name, gender, dob, nohp, address } = body
       // console.log("BODY", body)
       const { id } = userInfo
@@ -122,7 +122,7 @@ const editProfile = (req, res) => {
             message: "User not found"
           }
         })
-      resHelper.success(res, status, { Message: "Update Successfuly", result })
+      resHelper.success(res, status, { message, result })
     })
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, { err })

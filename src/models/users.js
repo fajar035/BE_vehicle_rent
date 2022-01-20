@@ -188,7 +188,9 @@ const editProfile = (body, userInfo, bodyOld) => {
       if (affectedRows == 0) return resolve({ status: 404, result })
       resolve({
         status: 200,
+        message: "Successfuly changed data",
         result: {
+          id: id,
           name: name,
           gender: gender,
           dob: dateInput,
