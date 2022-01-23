@@ -156,6 +156,7 @@ const editProfile = (body, userInfo, bodyOld) => {
     }
 
     let dateQuery = dob
+    console.log("DOB", dateQuery)
 
     if (!name) {
       name = nameOld
@@ -177,8 +178,9 @@ const editProfile = (body, userInfo, bodyOld) => {
     }
 
     const dateInput = formatDate(dateQuery)
+    console.log("DATE-INPUT", dateInput)
 
-    const statement = [name, gender, dateInput, nohp, address, photo, id]
+    const statement = [name, gender, dob, nohp, address, photo, id]
 
     const sql =
       "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ?, photo = ? WHERE id = ?"

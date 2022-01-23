@@ -6,7 +6,7 @@ const upload = require("../middleware/upload")
 const getUser = require("../middleware/user")
 
 usersRouter.get("/", checkToken, usersControllers.getAllProfile)
-usersRouter.get("/:id", checkToken, usersControllers.getProfileById)
+usersRouter.get("/detail", checkToken, usersControllers.getProfileById)
 usersRouter.get("/photo", checkToken, usersControllers.getPhoto)
 
 // usersRouter.post("/", checkToken, usersControllers.addProfile)
@@ -19,7 +19,7 @@ usersRouter.post(
 )
 
 usersRouter.patch(
-  "/",
+  "/edit",
   checkToken,
   upload.single("photoUser"),
   getUser.getUser,
