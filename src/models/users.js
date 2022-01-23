@@ -142,10 +142,17 @@ const addProfile = (body) => {
 // edit profile
 const editProfile = (body, userInfo, bodyOld) => {
   return new Promise((resolve, reject) => {
-    let { name, gender, dob, nohp, address, photo } = body
+    let { name, gender, dob, nohp, address, photo, email } = body
     // console.log("BODY-MODEL", photo)
-    const { nameOld, genderOld, dobOld, noHpOld, addressOld, photoOld } =
-      bodyOld
+    const {
+      nameOld,
+      genderOld,
+      dobOld,
+      noHpOld,
+      addressOld,
+      photoOld,
+      emailOld
+    } = bodyOld
     const { id } = userInfo
 
     // console.log("FILE-PHOTO", file.filename)
@@ -176,14 +183,17 @@ const editProfile = (body, userInfo, bodyOld) => {
     if (!photo) {
       photo = photoOld
     }
+    if (!email) {
+      email = emailOld
+    }
 
     const dateInput = formatDate(dateQuery)
-    console.log("DATE-INPUT", dateInput)
+    // console.log("DATE-INPUT", dateInput)
 
-    const statement = [name, gender, dob, nohp, address, photo, id]
+    const statement = [name, gender, dob, nohp, address, photo, email, id]
 
     const sql =
-      "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ?, photo = ? WHERE id = ?"
+      "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ?, photo = ?, email = ? WHERE id = ?"
     db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, err })
       const { affectedRows } = result
@@ -194,6 +204,7 @@ const editProfile = (body, userInfo, bodyOld) => {
         result: {
           id: id,
           name: name,
+          email: email,
           gender: gender,
           dob: dateInput,
           noHp: nohp,
