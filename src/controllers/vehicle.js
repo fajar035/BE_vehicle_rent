@@ -132,19 +132,6 @@ const deleteVehicle = (req, res) => {
     })
 }
 
-const getLocation = (req, res) => {
-  const { params } = req
-  const { id } = params
-  vehicleModel
-    .getLocation(id)
-    .then(({ status, result }) => {
-      return resHelper.success(res, status, { result })
-    })
-    .catch((status, err) => {
-      return resHelper.fail(res, status, { err })
-    })
-}
-
 const uploadPhotoVehicle = (req, res) => {
   const { id } = req.params
   // const { filename } = req.files
@@ -193,7 +180,7 @@ module.exports = {
   addVehicle,
   editVehicle,
   deleteVehicle,
-  getLocation,
+
   getPhotoVehicle,
   uploadPhotoVehicle
 }

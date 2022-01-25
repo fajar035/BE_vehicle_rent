@@ -154,7 +154,7 @@ const editVehicle = (id, body, bodyOld) => {
       status,
       photos
     } = body
-    console.log(photos)
+    console.log("PHOTOS", photos)
 
     const {
       nameOld,
@@ -167,16 +167,34 @@ const editVehicle = (id, body, bodyOld) => {
       id_locationOld,
       id_statusOld
     } = bodyOld
-
-    if (!name) return (name = nameOld)
-    if (!description) return (description = descriptionOld)
-    if (!capacity) return (capacity = capacityOld)
-    if (!price) return (price = priceOld)
-    if (!stock) return (stock = stockOld)
-    if (!photos) return (photos = photoOld)
-    if (!category) return (category = id_categoryOld)
-    if (!location) return (location = id_locationOld)
-    if (!status) return (status = id_statusOld)
+    console.log("PHOTO-OLD", photoOld)
+    if (!name) {
+      name = nameOld
+    }
+    if (!description) {
+      description = descriptionOld
+    }
+    if (!capacity) {
+      capacity = capacityOld
+    }
+    if (!price) {
+      price = priceOld
+    }
+    if (!stock) {
+      stock = stockOld
+    }
+    if (!photos) {
+      photos = photoOld
+    }
+    if (!category) {
+      category = id_categoryOld
+    }
+    if (!location) {
+      location = id_locationOld
+    }
+    if (!status) {
+      status = id_statusOld
+    }
 
     const sql =
       "UPDATE vehicles SET name = ?, description = ?, capacity = ?, price = ?, stock = ?, photo = ?, id_category = ?, id_location = ?, id_status = ? WHERE id = ?"
@@ -195,6 +213,8 @@ const editVehicle = (id, body, bodyOld) => {
     console.log("STATEMENT", statement)
     db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, err })
+      console.log("ERROR", err)
+      console.log("RESULT", result)
       const { affectedRows } = result
       if (affectedRows == 0) return resolve({ status: 404, result })
       return resolve({
@@ -225,16 +245,6 @@ const deleteVehicle = (id) => {
       if (err) return reject({ status: 500, err })
       if (affectedRows == 0) return resolve({ status: 404, result })
       resolve({ status: 200 }, result)
-    })
-  })
-}
-
-const getLocation = (id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM location WHERE id = ${id}`
-    db.query(sql, (err, result) => {
-      if (err) return reject({ status: 500, err })
-      return resolve({ status: 200, result })
     })
   })
 }
@@ -279,7 +289,7 @@ module.exports = {
   addVehicle,
   editVehicle,
   deleteVehicle,
-  getLocation,
+
   getPhotoVehicle,
   uploadPhotoVehicle
 }

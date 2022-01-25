@@ -21,7 +21,7 @@ vehicleRouter.patch(
 
 vehicleRouter.delete("/:id", vehicleController.deleteVehicle)
 
-vehicleRouter.get("/location/:id", vehicleController.getLocation)
+// vehicleRouter.get("/location", vehicleController.getLocation)
 
 vehicleRouter.get("/photoVehicle", vehicleController.getPhotoVehicle)
 
