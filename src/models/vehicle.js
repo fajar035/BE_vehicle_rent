@@ -131,8 +131,7 @@ const addVehicle = (body, inputPhoto) => {
           capacity: capacity,
           price: price,
           stock: stock,
-          // photos: JSON.parse(inputPhoto),
-          photos: inputPhoto,
+          photos: JSON.parse(inputPhoto),
           category: category,
           location: location,
           status: status
