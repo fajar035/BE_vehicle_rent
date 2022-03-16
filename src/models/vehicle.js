@@ -18,16 +18,15 @@ const getAllVehicle = (keyword, query, keywordFilter) => {
       statement.push(mysql.raw(keyword));
     }
 
-    if (keywordFilter.length !== 0) {
-      sql += " WHERE category.category = ?";
+    if (keyword.length !== 2 && keywordFilter.length !== 0) {
+      sql += " AND category.category = ?";
       statement.push(mysql.raw(keywordFilter));
     }
 
-    // if(keywordPopular.length !== 0){
-    //   sql += " WHERE category.category = ?"
-    //   statement.push(mysql.raw(keywordFilter))
-
-    // }
+    if (keywordFilter.length !== 0 && keyword.length === 2) {
+      sql += " WHERE category.category = ?";
+      statement.push(mysql.raw(keywordFilter));
+    }
 
     if (order && orderBy) {
       sql += " ORDER BY ? ?";
