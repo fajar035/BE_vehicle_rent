@@ -1,50 +1,50 @@
 /* eslint-disable space-before-function-paren */
-const usersModel = require("../models/users")
-const resHelper = require("../helpers/response")
+const usersModel = require("../models/users");
+const resHelper = require("../helpers/response");
 
 // get all profile
 const getAllProfile = (req, res) => {
-  const { query, userInfo } = req
-  let keyword = `%%`
+  const { query, userInfo } = req;
+  let keyword = `%%`;
 
-  if (query.cari) keyword = `'%${query.cari}%'`
+  if (query.cari) keyword = `'%${query.cari}%'`;
   usersModel
     .getAllProfile(keyword, query, userInfo)
     .then(({ status, result, meta }) => {
-      return resHelper.success(res, status, { result, meta })
+      return resHelper.success(res, status, { result, meta });
     })
     .catch(({ status, err }) => {
-      return resHelper.fail(res, status, { err })
-    })
-}
+      return resHelper.fail(res, status, { err });
+    });
+};
 
 // get profile by id
 const getProfileById = (req, res) => {
-  const { userInfo } = req
+  const { userInfo } = req;
   // console.log(userInfo)
-  const id = userInfo.id
+  const id = userInfo.id;
   usersModel
     .getProfileById(id)
     .then(({ status, result }) => {
-      const { id, name, gender, email, dob, nohp, address, photo } = result[0]
+      const { id, name, gender, email, dob, nohp, address, photo } = result[0];
 
       function formatDate(date) {
-        const d = new Date(date)
-        let month = "" + (d.getMonth() + 1)
-        let day = "" + d.getDate()
-        const year = d.getFullYear()
+        const d = new Date(date);
+        let month = "" + (d.getMonth() + 1);
+        let day = "" + d.getDate();
+        const year = d.getFullYear();
 
-        if (month.length < 2) month = "0" + month
-        if (day.length < 2) day = "0" + day
+        if (month.length < 2) month = "0" + month;
+        if (day.length < 2) day = "0" + day;
 
-        return [year, month, day].join("-")
+        return [year, month, day].join("-");
       }
-      const birtday = formatDate(dob)
+      const birtday = formatDate(dob);
 
       if (status === 404)
         return resHelper.success(res, status, {
           message: "User not found"
-        })
+        });
       return resHelper.success(res, status, {
         result: {
           id,
@@ -56,56 +56,57 @@ const getProfileById = (req, res) => {
           address,
           photo
         }
-      })
+      });
     })
     .catch(({ status, err }) => {
+      console.log(err);
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
         err
-      })
-    })
-}
+      });
+    });
+};
 
 // add new profile
 const addProfile = (req, res) => {
-  const { body } = req
+  const { body } = req;
   usersModel
     .addProfile(body)
     .then(({ status, result }) => {
       if (status == 404)
         return res
           .status(status)
-          .json({ message: "data cannot be empty", result })
+          .json({ message: "data cannot be empty", result });
 
       res.status(status).json({
         message: "Add new profile successfuly",
         result
-      })
+      });
       // const {name, gender, phoneNumber, dateOfBirth, address, photo} = result
       // cek data jika tidak ada
     })
     .catch(({ status, err }) => {
       res
         .status(status)
-        .json({ message: "An error occurred on the server", err })
-    })
-}
+        .json({ message: "An error occurred on the server", err });
+    });
+};
 
 // edit profile
 const editProfile = (req, res) => {
-  let { body, userInfo, bodyOld, file } = req
+  let { body, userInfo, bodyOld, file } = req;
   // console.log("FILE", file)
   // console.log("BODY", body)
 
   if (!file) {
     body = {
       ...body
-    }
+    };
   } else {
     body = {
       ...body,
       photo: `/users/photo/${file.filename}`
-    }
+    };
   }
 
   usersModel
@@ -113,7 +114,7 @@ const editProfile = (req, res) => {
     .then(({ status, result, message }) => {
       // const { name, gender, dob, nohp, address } = body
       // console.log("BODY", body)
-      const { id } = userInfo
+      const { id } = userInfo;
       if (status === 404)
         resHelper.success(res, status, {
           result: {
@@ -121,43 +122,43 @@ const editProfile = (req, res) => {
             status: status,
             message: "User not found"
           }
-        })
-      resHelper.success(res, status, { message, result })
+        });
+      resHelper.success(res, status, { message, result });
     })
     .catch(({ status, err }) => {
-      return resHelper.fail(res, status, { err })
-    })
-}
+      return resHelper.fail(res, status, { err });
+    });
+};
 
 // upload photo
 const uploadPhoto = (req, res) => {
   // res.status(200).json({message: "Upload Berhasil", url: req.file})
-  const { userInfo } = req
+  const { userInfo } = req;
   // const { id } = body
-  const { file } = req
+  const { file } = req;
   // console.log(file)
 
-  const fileName = file.filename
+  const fileName = file.filename;
   usersModel
     .uploadPhoto(fileName, userInfo)
     .then(({ status, result }) => {
       return resHelper.success(res, status, {
         message: "Upload Successfuly",
         result: result
-      })
+      });
     })
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
         err
-      })
-    })
-}
+      });
+    });
+};
 
 // delete profile
 const deleteProfile = (req, res) => {
-  const { query, userInfo } = req
-  const id = query.id
+  const { query, userInfo } = req;
+  const id = query.id;
   // console.log(req)
   usersModel
     .deleteProfile(id, userInfo)
@@ -166,35 +167,35 @@ const deleteProfile = (req, res) => {
         return resHelper.success(res, status, {
           id: id,
           message: "User not found"
-        })
+        });
       return resHelper.success(res, status, {
         id: id,
         message: "Data deleted successfully"
-      })
+      });
     })
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
         err
-      })
-    })
-}
+      });
+    });
+};
 
 const getPhoto = (req, res) => {
-  const { userInfo } = req
+  const { userInfo } = req;
 
   usersModel
     .getPhoto(userInfo)
     .then(({ status, result }) => {
-      return resHelper.success(res, status, result)
+      return resHelper.success(res, status, result);
     })
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
         err
-      })
-    })
-}
+      });
+    });
+};
 
 module.exports = {
   getAllProfile,
@@ -204,4 +205,4 @@ module.exports = {
   deleteProfile,
   uploadPhoto,
   getPhoto
-}
+};

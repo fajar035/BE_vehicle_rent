@@ -9,7 +9,7 @@
     "ecmaVersion": 2015
   },
   "rules": {
-    "semi": "error",
+    "semi": "semi",
     "eqeqeq": "off",
     "curly": "off",
     "quotes": [0, "double"],

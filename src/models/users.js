@@ -1,46 +1,46 @@
 /* eslint-disable indent */
-const mysql = require("mysql")
-const db = require("../configs/db")
+const mysql = require("mysql");
+const db = require("../configs/db");
 
 // get all Profile, by order id & name
 const getAllProfile = (keyword, query, userInfo) => {
   return new Promise((resolve, reject) => {
-    const { roles } = userInfo
+    const { roles } = userInfo;
 
     let sql =
-      "SELECT  id, name, email ,gender, dob, nohp, address, photo FROM users"
-    const statement = []
+      "SELECT  id, name, email ,gender, dob, nohp, address, photo FROM users";
+    const statement = [];
 
-    const order = query.sort
-    let orderBy = ""
-    if (query.by && query.by.toLowerCase() == "id") orderBy = "id"
-    if (query.by && query.by.toLowerCase() == "name") orderBy = "name"
+    const order = query.sort;
+    let orderBy = "";
+    if (query.by && query.by.toLowerCase() == "id") orderBy = "id";
+    if (query.by && query.by.toLowerCase() == "name") orderBy = "name";
 
     if (keyword.length !== 2) {
-      sql += " WHERE name LIKE ?"
-      statement.push(mysql.raw(keyword))
+      sql += " WHERE name LIKE ?";
+      statement.push(mysql.raw(keyword));
     }
 
     if (order && orderBy) {
-      sql += " ORDER BY ? ?"
-      statement.push(mysql.raw(orderBy), mysql.raw(order))
+      sql += " ORDER BY ? ?";
+      statement.push(mysql.raw(orderBy), mysql.raw(order));
     }
 
     // ambil total data
-    const countQuery = `select count(*) as "count" from users`
+    const countQuery = `select count(*) as "count" from users`;
     // let count
     db.query(countQuery, (err, result) => {
-      if (err) return reject({ status: 500, err })
+      if (err) return reject({ status: 500, err });
 
-      const page = parseInt(query.page)
-      const limit = parseInt(query.limit)
-      const count = result[0].count
-      const totalPage = Math.ceil(count / limit)
+      const page = parseInt(query.page);
+      const limit = parseInt(query.limit);
+      const count = result[0].count;
+      const totalPage = Math.ceil(count / limit);
 
       if (query.page && query.limit) {
-        sql += " LIMIT ? OFFSET ?"
-        const offset = (page - 1) * limit
-        statement.push(limit, offset)
+        sql += " LIMIT ? OFFSET ?";
+        const offset = (page - 1) * limit;
+        statement.push(limit, offset);
       }
 
       const meta = {
@@ -56,16 +56,16 @@ const getAllProfile = (keyword, query, userInfo) => {
           : `/users?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
         count
-      }
+      };
 
       db.query(sql, statement, (err, result) => {
-        if (err) return reject({ status: 500, err })
+        if (err) return reject({ status: 500, err });
         // const roles = "2"
         if (roles !== "2")
           reject({
             status: 401,
             err: { message: "Only admin has this access" }
-          })
+          });
 
         // query page tidak ditemukan
         if (result.length == 0)
@@ -75,32 +75,32 @@ const getAllProfile = (keyword, query, userInfo) => {
               data: "Data not found",
               result
             }
-          })
+          });
 
-        resolve({ status: 200, result: result, meta })
-      })
-    })
-  })
-}
+        resolve({ status: 200, result: result, meta });
+      });
+    });
+  });
+};
 
 // get profile by id
 const getProfileById = (id) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT id, name, gender,email,dob, nohp, address, photo FROM users WHERE id = ?"
+      "SELECT id, name, gender,email,dob, nohp, address, photo FROM users WHERE id = ?";
 
     db.query(sql, [id], (err, result) => {
-      if (err) return reject({ status: 500, err })
-      if (result.length == 0) return resolve({ status: 404, result })
-      resolve({ status: 200, result })
-    })
-  })
-}
+      if (err) return reject({ status: 500, err });
+      if (result.length == 0) return resolve({ status: 404, result });
+      resolve({ status: 200, result });
+    });
+  });
+};
 
 // add new profile
 const addProfile = (body) => {
   return new Promise((resolve, reject) => {
-    const { name, gender, dob, nohp, address } = body
+    const { name, gender, dob, nohp, address } = body;
 
     if (
       typeof name == "undefined" ||
@@ -109,22 +109,22 @@ const addProfile = (body) => {
       typeof nohp == "undefined" ||
       typeof address == "undefined"
     )
-      return resolve({ status: 404 })
+      return resolve({ status: 404 });
 
-    const dateQuery = dob
+    const dateQuery = dob;
 
     const formatDate = (date) => {
-      const dateStr = date.split("-")
-      return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0]
-    }
+      const dateStr = date.split("-");
+      return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0];
+    };
 
-    const dateInput = formatDate(dateQuery)
+    const dateInput = formatDate(dateQuery);
 
     const sql =
-      "INSERT INTO users VALUES(null, ? , ? , ? , ? , ? ,null, null, null)"
-    const statement = [name, gender, dob, nohp, address]
+      "INSERT INTO users VALUES(null, ? , ? , ? , ? , ? ,null, null, null)";
+    const statement = [name, gender, dob, nohp, address];
     db.query(sql, statement, (err, result) => {
-      if (err) return reject({ status: 500, message: "Query Error", err })
+      if (err) return reject({ status: 500, message: "Query Error", err });
       resolve({
         status: 201,
         result: {
@@ -134,15 +134,15 @@ const addProfile = (body) => {
           dateInput,
           address
         }
-      })
-    })
-  })
-}
+      });
+    });
+  });
+};
 
 // edit profile
 const editProfile = (body, userInfo, bodyOld) => {
   return new Promise((resolve, reject) => {
-    let { name, gender, dob, nohp, address, photo, email } = body
+    let { name, gender, dob, nohp, address, photo, email } = body;
     // console.log("BODY-MODEL", photo)
     const {
       nameOld,
@@ -152,52 +152,52 @@ const editProfile = (body, userInfo, bodyOld) => {
       addressOld,
       photoOld,
       emailOld
-    } = bodyOld
-    const { id } = userInfo
+    } = bodyOld;
+    const { id } = userInfo;
 
     // console.log("FILE-PHOTO", file.filename)
 
     const formatDate = (date) => {
-      const dateStr = date.split("-")
-      return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0]
-    }
+      const dateStr = date.split("-");
+      return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0];
+    };
 
-    let dateQuery = dob
-    console.log("DOB", dateQuery)
+    let dateQuery = dob;
+    console.log("DOB", dateQuery);
 
     if (!name) {
-      name = nameOld
+      name = nameOld;
     }
     if (!gender) {
-      gender = genderOld
+      gender = genderOld;
     }
     if (!dateQuery) {
-      dateQuery = dobOld
+      dateQuery = dobOld;
     }
     if (!nohp) {
-      nohp = noHpOld
+      nohp = noHpOld;
     }
     if (!address) {
-      address = addressOld
+      address = addressOld;
     }
     if (!photo) {
-      photo = photoOld
+      photo = photoOld;
     }
     if (!email) {
-      email = emailOld
+      email = emailOld;
     }
 
-    const dateInput = formatDate(dateQuery)
+    const dateInput = formatDate(dateQuery);
     // console.log("DATE-INPUT", dateInput)
 
-    const statement = [name, gender, dob, nohp, address, photo, email, id]
+    const statement = [name, gender, dob, nohp, address, photo, email, id];
 
     const sql =
-      "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ?, photo = ?, email = ? WHERE id = ?"
+      "UPDATE users SET name = ?, gender = ?, dob = ?, nohp = ?, address = ?, photo = ?, email = ? WHERE id = ?";
     db.query(sql, statement, (err, result) => {
-      if (err) return reject({ status: 500, err })
-      const { affectedRows } = result
-      if (affectedRows == 0) return resolve({ status: 404, result })
+      if (err) return reject({ status: 500, err });
+      const { affectedRows } = result;
+      if (affectedRows == 0) return resolve({ status: 404, result });
       resolve({
         status: 200,
         message: "Successfuly changed data",
@@ -211,57 +211,57 @@ const editProfile = (body, userInfo, bodyOld) => {
           address: address,
           photo: photo
         }
-      })
-    })
-  })
-}
+      });
+    });
+  });
+};
 
 // delete profile
 const deleteProfile = (id, userInfo) => {
   return new Promise((resolve, reject) => {
-    const { roles } = userInfo
-    const sql = "DELETE FROM users WHERE id = ?"
+    const { roles } = userInfo;
+    const sql = "DELETE FROM users WHERE id = ?";
 
     db.query(sql, [id], (err, result) => {
       if (roles !== "2")
-        reject({ status: 401, err: "Only admin has this access" })
-      const { affectedRows } = result
+        reject({ status: 401, err: "Only admin has this access" });
+      const { affectedRows } = result;
 
-      if (err) return reject({ status: 500, err })
+      if (err) return reject({ status: 500, err });
 
-      if (affectedRows == 0) return resolve({ status: 404, result })
-      resolve({ status: 200, result })
-    })
-  })
-}
+      if (affectedRows == 0) return resolve({ status: 404, result });
+      resolve({ status: 200, result });
+    });
+  });
+};
 
 // upload photo
 const uploadPhoto = (fileName, userInfo) => {
   return new Promise((resolve, reject) => {
-    const { id, email } = userInfo
+    const { id, email } = userInfo;
 
-    const filePath = `/users/photo/${fileName}`
-    const sql = "UPDATE users SET photo = ? WHERE id = ?"
+    const filePath = `/users/photo/${fileName}`;
+    const sql = "UPDATE users SET photo = ? WHERE id = ?";
     db.query(sql, [filePath, id], (err, result) => {
-      if (err) return reject({ status: 500, err })
+      if (err) return reject({ status: 500, err });
       resolve({
         status: 200,
         result: { id: id, email: email, filename: fileName }
-      })
-    })
-  })
-}
+      });
+    });
+  });
+};
 
 const getPhoto = (userInfo) => {
   return new Promise((resolve, reject) => {
-    const { id, email } = userInfo
-    const sql = "SELECT photo FROM users WHERE id = ?"
+    const { id, email } = userInfo;
+    const sql = "SELECT photo FROM users WHERE id = ?";
     db.query(sql, [id], (err, result) => {
-      if (err) return reject({ status: 500, err })
-      resolve({ status: 200, result: { result, id: id, email: email } })
-    })
-  })
-}
+      if (err) return reject({ status: 500, err });
+      resolve({ status: 200, result: { result, id: id, email: email } });
+    });
+  });
+};
 
 module.exports = {
   getAllProfile,
@@ -271,4 +271,4 @@ module.exports = {
   deleteProfile,
   uploadPhoto,
   getPhoto
-}
+};
