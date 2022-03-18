@@ -1,6 +1,8 @@
 /* eslint-disable indent */
+const { reject } = require("bcrypt/promises");
 const mysql = require("mysql");
 const db = require("../configs/db");
+const bcrypt = require("bcrypt");
 
 // get all Profile, by order id & name
 const getAllProfile = (keyword, query, userInfo) => {
@@ -139,6 +141,44 @@ const addProfile = (body) => {
   });
 };
 
+// Update Password
+const updatePassword = (oldPassword, newPassword, id) => {
+  return new Promise((resolve, reject) => {
+    const sqlOldPassword = `SELECT password FROM users WHERE id = ?`;
+    db.query(sqlOldPassword, [id], (err, result) => {
+      if (err) return reject({ status: 500, message: "Query Error", err });
+      console.log("PASSWORD", result[0].password);
+      const passwordDB = result[0].password;
+      bcrypt.compare(oldPassword, passwordDB, (err, result) => {
+        if (err)
+          return reject({ status: 400, message: "Compare bcrypt Failed", err });
+        console.log("RESULT HASED", result);
+        if (result === false) {
+          const error = new Error("Old password is incorrect");
+          return reject({ status: 400, message: "Old password is incorrect" });
+        }
+        bcrypt
+          .hash(newPassword, 10)
+          .then((hashedPassword) => {
+            const sqlUpdatePassword = `UPDATE users
+            SET password = ?
+            WHERE id = ?`;
+            db.query(sqlUpdatePassword, [hashedPassword, id], (err, result) => {
+              if (err) return reject(err);
+              return resolve({
+                status: 200,
+                result: { id: id, message: "Update password success" }
+              });
+            });
+          })
+          .catch((err) => {
+            return reject({ status: 500, message: "bcrypt hash eror", err });
+          });
+      });
+    });
+  });
+};
+
 // edit profile
 const editProfile = (body, userInfo, bodyOld) => {
   return new Promise((resolve, reject) => {
@@ -270,5 +310,6 @@ module.exports = {
   editProfile,
   deleteProfile,
   uploadPhoto,
-  getPhoto
+  getPhoto,
+  updatePassword
 };

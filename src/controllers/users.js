@@ -130,6 +130,30 @@ const editProfile = (req, res) => {
     });
 };
 
+// Update Password
+const updatePassword = (req, res) => {
+  const { body, userInfo } = req;
+  const { newPassword, oldPassword } = body;
+  if (newPassword === oldPassword)
+    return resHelper.fail(res, 401, {
+      message: "New password cannot be the same as old password"
+    });
+  const { id } = userInfo;
+
+  usersModel
+    .updatePassword(oldPassword, newPassword, id)
+    .then(({ status, result }) => {
+      resHelper.success(res, status, {
+        id: result.id,
+        message: result.message
+      });
+    })
+    .catch(({ status, err, message }) => {
+      console.log("STATUS, ERRM MESSAGE", status, err, message);
+      return resHelper.fail(res, status, { message: message, err });
+    });
+};
+
 // upload photo
 const uploadPhoto = (req, res) => {
   // res.status(200).json({message: "Upload Berhasil", url: req.file})
@@ -204,5 +228,6 @@ module.exports = {
   editProfile,
   deleteProfile,
   uploadPhoto,
-  getPhoto
+  getPhoto,
+  updatePassword
 };
