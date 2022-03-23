@@ -146,16 +146,29 @@ const createSoftDelete = (id, body) => {
   return new Promise((resolve, reject) => {
     const { softDelete } = body;
     if (!softDelete)
-      return reject({ status: 400, message: "Data tidak boleh kosong" });
+      return reject({
+        err: { status: 400, message: "Data cannot be empty" }
+      });
 
     const sql = `UPDATE vehicles SET soft_delete = ? WHERE id = ?`;
     db.query(sql, [softDelete, id], (err, result) => {
       if (err) return reject({ status: 500, err });
-      return resolve({
-        status: 200,
-        message: "Successfuly Delete Data",
-        result
-      });
+      if (softDelete === "1")
+        return resolve({
+          result: {
+            status: 200,
+            id: id,
+            message: "Successfuly Delete Data"
+          }
+        });
+      if (softDelete === "0")
+        return resolve({
+          result: {
+            status: 200,
+            id: id,
+            message: "Successfuly Restore Data"
+          }
+        });
     });
   });
 };

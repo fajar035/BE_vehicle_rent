@@ -66,31 +66,18 @@ const addVehicle = (req, res) => {
 const softDeleteVehicle = (req, res) => {
   let { body, params } = req;
   const id = params.id;
-  console.log("ID", id);
-  console.log("BODY", body);
 
   vehicleModel
     .createSoftDelete(id, body)
-    .then(({ result, status, message }) => {
-      if (status === 404)
-        resHelper.success(res, status, {
-          result: {
-            id: id,
-            status: status,
-            message: "Vehicle not found"
-          }
-        });
+    .then(({ result }) => {
       // resHelper.success(res, status, { message, result });
-      // console.log("MESSAGE", message);
-      if (status === 200)
-        return resHelper.success(res, status, {
-          status: status,
-          message: message
-        });
+      // console.log("MESSAGE", status, result);
+      if (result.status === 200)
+        return resHelper.success(res, result.status, { result });
     })
-    .catch(({ status, err, message }) => {
-      return resHelper.fail(res, status, { status: status, message: message });
-      console.log("ERROR", err, status);
+    .catch(({ err }) => {
+      return resHelper.fail(res, err.status, { err });
+      console.log("ERROR", err);
     });
 };
 
