@@ -1,4 +1,5 @@
 /* eslint-disable indent */
+const { reject } = require("bcrypt/promises");
 const mysql = require("mysql");
 const db = require("../configs/db");
 
@@ -136,6 +137,24 @@ const addVehicle = (body, inputPhoto) => {
           location: location,
           status: status
         }
+      });
+    });
+  });
+};
+
+const createSoftDelete = (id, body) => {
+  return new Promise((resolve, reject) => {
+    const { softDelete } = body;
+    if (!softDelete)
+      return reject({ status: 400, message: "Data tidak boleh kosong" });
+
+    const sql = `UPDATE vehicles SET soft_delete = ? WHERE id = ?`;
+    db.query(sql, [softDelete, id], (err, result) => {
+      if (err) return reject({ status: 500, err });
+      return resolve({
+        status: 200,
+        message: "Successfuly Delete Data",
+        result
       });
     });
   });
@@ -289,7 +308,7 @@ module.exports = {
   addVehicle,
   editVehicle,
   deleteVehicle,
-
   getPhotoVehicle,
-  uploadPhotoVehicle
+  uploadPhotoVehicle,
+  createSoftDelete
 };
