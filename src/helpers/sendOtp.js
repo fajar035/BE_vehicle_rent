@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "hotmail",
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_SENDER,
     pass: process.env.PASSWORD_SENDER
@@ -28,7 +28,7 @@ exports.sendForgotPass = (email, data) => {
           }
           .wrapper {
               border: 1px solid #393939;
-              width: min(600px, 90%);
+              width: 90%;
               margin-inline: 5%;
       
           }
@@ -44,7 +44,8 @@ exports.sendForgotPass = (email, data) => {
               line-height: 52px;
               color: #1a1a1a;
               text-decoration: none;
-              margin-inline: 30px;
+              
+              text-align: center;
           }
           .link {
               display: inline-block;
@@ -66,6 +67,7 @@ exports.sendForgotPass = (email, data) => {
               margin-inline: 30px;
               margin-top: 20px;
               font-weight: bold;
+              text-align: center;
           }
           .text {
               margin-inline: 30px;
@@ -96,7 +98,7 @@ exports.sendForgotPass = (email, data) => {
       <body>
           <div class="wrapper">
               <h2>Hi, ${data.name ? data.name : "Beloved User"}</h2>
-              <span class="company">RAZ</span>
+              <span class="company">Vehicle Rental - ikeh151</span>
               <p class="opening">Please enter code below to proceed your reset password request.</p>
               <div class="code-wrapper">
                   <u class="code">${data.otp}</u>
@@ -111,9 +113,10 @@ exports.sendForgotPass = (email, data) => {
     console.log("LOADING RESPONSE EMAIL ...");
     transporter.sendMail(message, (error, info) => {
       if (error) {
-        console.log(error);
+        console.log("Failed to send email ...", error);
         reject(error);
       } else {
+        console.log("Successfully sent email ...", info);
         resolve(info);
       }
     });
