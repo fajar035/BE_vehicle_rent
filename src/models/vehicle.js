@@ -149,6 +149,14 @@ const createSoftDelete = (id, body) => {
       return reject({
         err: { status: 400, message: "Data cannot be empty" }
       });
+    if (softDelete !== "0" && softDelete !== "1")
+      return reject({
+        err: {
+          status: 400,
+          message: "Incorrect input, please enter 0 or 1",
+          example: "0 = Restore Data, 1 = Delete Data"
+        }
+      });
 
     const sql = `UPDATE vehicles SET soft_delete = ? WHERE id = ?`;
     db.query(sql, [softDelete, id], (err, result) => {
