@@ -114,10 +114,10 @@ exports.sendForgotPass = (email, data) => {
     transporter.sendMail(message, (error, info) => {
       if (error) {
         console.log("Failed to send email ...", error);
-        reject(error);
+        reject({ error: error });
       } else {
         console.log("Successfully sent email ...", info);
-        resolve(info);
+        resolve({ result: info });
       }
     });
   });

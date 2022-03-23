@@ -157,14 +157,23 @@ const getOtp = (body) => {
             status: 500,
             err: { msg: "Something went wrong", data: null }
           });
-        console.log(email);
-        sendForgotPass(email, { name: name, otp });
+
+        sendForgotPass(email, { name: name, otp })
+          .then((res) => {
+            console.log("RES NODEMAILER", res);
+          })
+          .catch((err) => {
+            console.log("ERROR NODEMAILER", err);
+          });
         const data = {
           email: email
         };
         resolve({
           status: 200,
-          result: { msg: "Please check your email", data }
+          result: {
+            msg: "Please check your email bro",
+            data
+          }
         });
       });
     });
