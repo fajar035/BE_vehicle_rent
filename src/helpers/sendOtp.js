@@ -2,7 +2,6 @@ const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  type: "OAuth2",
   auth: {
     user: process.env.EMAIL_SENDER,
     pass: process.env.PASSWORD_SENDER
