@@ -6,9 +6,12 @@ const db = require("../configs/db");
 const getAllVehicle = (keyword, query, keywordFilter) => {
   return new Promise((resolve, reject) => {
     let sql =
-      "SELECT vehicles.id, vehicles.name, vehicles.description, vehicles.capacity, vehicles.price,vehicles.stock, vehicles.photo, category.category, location.location, status.status FROM vehicles JOIN category ON vehicles.id_category = category.id JOIN location ON vehicles.id_location = location.id JOIN status ON vehicles.id_status = status.id";
+      "SELECT vehicles.id, vehicles.name, vehicles.description, vehicles.capacity, vehicles.price,vehicles.stock, vehicles.photo, vehicles.soft_delete ,category.category, location.location, status.status FROM vehicles JOIN category ON vehicles.id_category = category.id JOIN location ON vehicles.id_location = location.id JOIN status ON vehicles.id_status = status.id";
     const statement = [];
     const order = query.sort;
+    const softDelete = query.softdelete;
+    console.log("SOFT DELETE", typeof softDelete);
+
     let orderBy = "";
     if (query.by && query.by.toLowerCase() == "id") orderBy = "id";
     if (query.by && query.by.toLowerCase() == "name") orderBy = "name";
@@ -32,6 +35,11 @@ const getAllVehicle = (keyword, query, keywordFilter) => {
     if (order && orderBy) {
       sql += " ORDER BY ? ?";
       statement.push(mysql.raw(orderBy), mysql.raw(order));
+    }
+
+    if (softDelete !== undefined && softDelete !== "") {
+      sql += " WHERE soft_delete = '?'";
+      statement.push(mysql.raw(softDelete));
     }
 
     const countQuery = `select count(*) as "count" from vehicles`;
@@ -66,6 +74,7 @@ const getAllVehicle = (keyword, query, keywordFilter) => {
       };
 
       db.query(sql, statement, (err, result) => {
+        console.log(result);
         if (err) return reject({ status: 500, err });
         if (result.length == 0)
           return resolve({
