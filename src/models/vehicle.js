@@ -17,28 +17,52 @@ const getAllVehicle = (keyword, query, { category, location }) => {
     if (query.order && query.order.toLowerCase() == "name") orderBy = "name";
     if (query.order && query.order.toLowerCase() == "price") orderBy = "price";
 
+    // jika ada cari
     if (keyword.length !== 2) {
       sql += " WHERE name LIKE ?";
       statement.push(mysql.raw(keyword));
     }
 
+    // jika ada cari & ada category
     if (keyword.length !== 2 && category.length !== 0) {
       sql += " AND category.category = ?";
       statement.push(mysql.raw(category));
     }
 
+    // jika ada cari & ada location
     if (keyword.length !== 2 && location.length !== 0) {
       sql += " AND location.location = ?";
       statement.push(mysql.raw(location));
     }
 
-    if (location.length !== 0 && keyword.length === 2) {
+    // jika ada location & gak ada cari
+    if (
+      location.length !== 0 &&
+      keyword.length === 2 &&
+      category.length === 0
+    ) {
       sql += " WHERE location.location = ?";
       statement.push(mysql.raw(location));
     }
 
-    if (category.length !== 0 && keyword.length === 2) {
+    // jika ada category & gak ada cari
+    if (
+      category.length !== 0 &&
+      keyword.length === 2 &&
+      location.length === 0
+    ) {
       sql += " WHERE category.category = ?";
+      statement.push(mysql.raw(category));
+    }
+
+    // jika gak ada cari & ada location sam category
+    if (
+      keyword.length === 2 &&
+      location.length !== 0 &&
+      category.length !== 0
+    ) {
+      sql += " WHERE location.location = ? AND category.category = ?";
+      statement.push(mysql.raw(location));
       statement.push(mysql.raw(category));
     }
 
