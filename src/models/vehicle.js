@@ -3,33 +3,43 @@ const { reject } = require("bcrypt/promises");
 const mysql = require("mysql");
 const db = require("../configs/db");
 
-const getAllVehicle = (keyword, query, keywordFilter) => {
+const getAllVehicle = (keyword, query, { category, location }) => {
   return new Promise((resolve, reject) => {
     let sql =
       "SELECT vehicles.id, vehicles.name, vehicles.description, vehicles.capacity, vehicles.price,vehicles.stock, vehicles.photo, vehicles.soft_delete ,category.category, location.location, status.status FROM vehicles JOIN category ON vehicles.id_category = category.id JOIN location ON vehicles.id_location = location.id JOIN status ON vehicles.id_status = status.id";
     const statement = [];
-    const order = query.sort;
+    const order = query.order;
     const softDelete = query.softdelete;
-    console.log("SOFT DELETE", typeof softDelete);
+    // console.log("SOFT DELETE", typeof softDelete);
 
     let orderBy = "";
-    if (query.by && query.by.toLowerCase() == "id") orderBy = "id";
-    if (query.by && query.by.toLowerCase() == "name") orderBy = "name";
-    if (query.by && query.by.toLowerCase() == "price") orderBy = "price";
+    if (query.order && query.order.toLowerCase() == "id") orderBy = "id";
+    if (query.order && query.order.toLowerCase() == "name") orderBy = "name";
+    if (query.order && query.order.toLowerCase() == "price") orderBy = "price";
 
     if (keyword.length !== 2) {
       sql += " WHERE name LIKE ?";
       statement.push(mysql.raw(keyword));
     }
 
-    if (keyword.length !== 2 && keywordFilter.length !== 0) {
+    if (keyword.length !== 2 && category.length !== 0) {
       sql += " AND category.category = ?";
-      statement.push(mysql.raw(keywordFilter));
+      statement.push(mysql.raw(category));
     }
 
-    if (keywordFilter.length !== 0 && keyword.length === 2) {
+    if (keyword.length !== 2 && location.length !== 0) {
+      sql += " AND location.location = ?";
+      statement.push(mysql.raw(location));
+    }
+
+    if (location.length !== 0 && keyword.length === 2) {
+      sql += " WHERE location.location = ?";
+      statement.push(mysql.raw(location));
+    }
+
+    if (category.length !== 0 && keyword.length === 2) {
       sql += " WHERE category.category = ?";
-      statement.push(mysql.raw(keywordFilter));
+      statement.push(mysql.raw(category));
     }
 
     if (order && orderBy) {
@@ -74,7 +84,7 @@ const getAllVehicle = (keyword, query, keywordFilter) => {
       };
 
       db.query(sql, statement, (err, result) => {
-        console.log(result);
+        // console.log(result);
         if (err) return reject({ status: 500, err });
         if (result.length == 0)
           return resolve({

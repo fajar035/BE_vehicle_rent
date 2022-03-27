@@ -220,6 +220,7 @@ const resetPassword = (body) => {
                 err: { msg: "Something went wrong", data: null }
               });
             }
+            console.log("EMAIL", email);
             return resolve({
               status: 200,
               result: {

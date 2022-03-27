@@ -7,7 +7,7 @@ const getAllProfile = (req, res) => {
   const { query, userInfo } = req;
   let keyword = `%%`;
 
-  if (query.cari) keyword = `'%${query.cari}%'`;
+  if (query.search) keyword = `'%${query.search}%'`;
   usersModel
     .getAllProfile(keyword, query, userInfo)
     .then(({ status, result, meta }) => {

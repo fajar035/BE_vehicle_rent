@@ -4,12 +4,17 @@ const resHelper = require("../helpers/response");
 const getAllVehicle = (req, res) => {
   const { query } = req;
   let keyword = `%%`;
-  let keywordFilter = ``;
+  // let keywordFilter = ``;
+  const filter = {
+    category: "",
+    location: ""
+  };
 
-  if (query.cari) keyword = `'%${query.cari}%'`;
-  if (query.filter) keywordFilter = `'${query.filter}'`;
+  if (query.search) keyword = `'%${query.search}%'`;
+  if (query.filterCategory) filter.category = `'${query.filterCategory}'`;
+  if (query.filterLocation) filter.location = `'${query.filterLocation}'`;
   vehicleModel
-    .getAllVehicle(keyword, query, keywordFilter)
+    .getAllVehicle(keyword, query, filter)
     .then(({ status, result, meta }) => {
       return resHelper.success(res, status, { result, meta });
     })

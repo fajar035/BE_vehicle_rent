@@ -13,10 +13,10 @@ const getAllProfile = (keyword, query, userInfo) => {
       "SELECT  id, name, email ,gender, dob, nohp, address, photo FROM users";
     const statement = [];
 
-    const order = query.sort;
+    const order = query.order;
     let orderBy = "";
-    if (query.by && query.by.toLowerCase() == "id") orderBy = "id";
-    if (query.by && query.by.toLowerCase() == "name") orderBy = "name";
+    if (query.sort && query.sort.toLowerCase() == "id") orderBy = "id";
+    if (query.sort && query.sort.toLowerCase() == "name") orderBy = "name";
 
     if (keyword.length !== 2) {
       sql += " WHERE name LIKE ?";
