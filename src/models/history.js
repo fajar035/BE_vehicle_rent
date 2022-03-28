@@ -151,15 +151,57 @@ const deleteHistory = (id) => {
 };
 
 // popular vehicles by rating
-const popular = () => {
+const popular = (query) => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", (price * qty) as "total price", h.rating from (history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id) join category c on v.id_category = v.id join location l on v.id_location = v.id where h.rating = 5 order by h.rating`;
+    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", (price * qty) as "total price", h.rating from (history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id) join category c on v.id_category = v.id join location l on v.id_location = v.id where h.rating = 5 order by h.rating`;
 
-    db.query(sql, (err, result) => {
-      // console.log(err, result)
+    const statement = [];
+    const countQuery = `select count(*) as "count" from history`;
+
+    db.query(countQuery, (err, result) => {
       if (err) return reject({ status: 500, err });
-      return resolve({ status: 200, result });
+
+      const page = parseInt(query.page);
+      const limit = parseInt(query.limit);
+      const count = result[0].count;
+      const totalPage = Math.ceil(count / page);
+      if (query.page && query.limit) {
+        sql += " LIMIT ? OFFSET ?";
+        const offset = (page - 1) * limit;
+        statement.push(limit, offset);
+      }
+
+      const meta = {
+        next: isNaN(page)
+          ? null
+          : page == Math.ceil(count / limit)
+          ? null
+          : `/history?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+        prev: isNaN(limit)
+          ? null
+          : page == 1 || page == 0
+          ? null
+          : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+        totalPage,
+        count
+      };
+      console.log(statement);
+      db.query(sql, statement, (err, result) => {
+        if (err) return reject({ status: 500, err });
+        if (result.length == 0)
+          return resolve({
+            status: 400,
+            result: { message: "Data not found", result }
+          });
+        resolve({ status: 200, result, meta });
+      });
     });
+
+    // db.query(sql, (err, result) => {
+    //   // console.log(err, result)
+    //   if (err) return reject({ status: 500, err });
+    //   return resolve({ status: 200, result });
+    // });
   });
 };
 
