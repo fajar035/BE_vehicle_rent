@@ -15,7 +15,7 @@ const register = (body) => {
 
       if (result.length !== 0)
         return resolve({
-          status: 501,
+          status: 406,
           result: { message: "Email is already registered" }
         });
       bcrypt
