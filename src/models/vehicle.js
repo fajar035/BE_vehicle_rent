@@ -137,7 +137,7 @@ const addVehicle = (body, inputPhoto) => {
   return new Promise((resolve, reject) => {
     // console.log("BODY", body)
     // console.log("PHOTO", inputPhoto)
-
+    const soft_delete = "0";
     const {
       name,
       description,
@@ -149,7 +149,10 @@ const addVehicle = (body, inputPhoto) => {
       status
     } = body;
 
-    const sql = "INSERT INTO vehicles VALUES(null, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    console.log(name);
+
+    const sql =
+      "INSERT INTO vehicles VALUES(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     const statement = [
       name,
@@ -158,6 +161,7 @@ const addVehicle = (body, inputPhoto) => {
       price,
       stock,
       inputPhoto,
+      soft_delete,
       category,
       location,
       status
