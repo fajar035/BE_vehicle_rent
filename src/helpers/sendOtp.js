@@ -14,7 +14,7 @@ exports.sendForgotPass = (email, data) => {
   console.log("email", email);
   return new Promise((resolve, reject) => {
     const message = {
-      from: process.env.EMAIL_SENDER,
+      from: `"Vehicle Rental 🚗" <${process.env.EMAIL_SENDER}>`,
       to: email,
       subject: "OTP Reset Password - Vehicle Rental - Ikeh151",
       html: `<!DOCTYPE html>
