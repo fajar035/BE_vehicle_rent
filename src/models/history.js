@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const getAllHistory = (keyword, query) => {
   return new Promise((resolve, reject) => {
     // total = jumlah price
-    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", (price * qty) as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
+    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
     const statement = [];
     const order = query.sort;
     let orderBy = "";
@@ -70,7 +70,7 @@ const getAllHistory = (keyword, query) => {
 // history by id
 const getHistoryById = (id) => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", (price * qty) as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.id = ?`;
+    const sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.id = ?`;
 
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err });
@@ -103,7 +103,7 @@ const newHistory = (body) => {
     const dateInputBooking = formatDate(start_date);
     const dateInputReturn = formatDate(return_date);
     // INSERT INTO `vehicle_rent`.`history` (`id_users`, `id_vehicles`, `id_category`, `id_location`, `qty`, `start_date`, `return_date`, `total`, `rating`, `testimony`) VALUES ('80', '5', '3', '6', '1', '2022-01-10', '2022-02-24', '1', '5', 'Mantab');
-
+    console.log("TOTAL PRICE", total_price);
     const statement = [
       id_users,
       id_vehicles,
@@ -116,7 +116,7 @@ const newHistory = (body) => {
     ];
 
     db.query(sql, statement, (err, result) => {
-      console.log(sql, statement);
+      // console.log(sql, statement);
       if (err) return reject({ status: 500, err });
       resolve({
         status: 201,
@@ -128,7 +128,7 @@ const newHistory = (body) => {
           qty,
           start_date,
           return_date,
-          total,
+          total_price,
           rating,
           testimony
         }
@@ -153,7 +153,7 @@ const deleteHistory = (id) => {
 // popular vehicles by rating
 const popular = (query) => {
   return new Promise((resolve, reject) => {
-    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", (price * qty) as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.rating = 5 order by h.rating`;
+    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.rating = 5 order by h.rating`;
 
     const statement = [];
     const countQuery = `select count(*) as "count" from history`;
