@@ -89,7 +89,7 @@ const newHistory = (body) => {
       qty,
       start_date,
       return_date,
-      total,
+      total_price,
       rating,
       testimony
     } = body;
@@ -110,7 +110,7 @@ const newHistory = (body) => {
       qty,
       dateInputBooking,
       dateInputReturn,
-      total,
+      total_price,
       rating,
       testimony
     ];
