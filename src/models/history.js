@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const getAllHistory = (keyword, query) => {
   return new Promise((resolve, reject) => {
     // total = jumlah price
-    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
+    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.stock , v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
     const statement = [];
     const order = query.sort;
     let orderBy = "";
@@ -51,7 +51,7 @@ const getAllHistory = (keyword, query) => {
           ? null
           : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
-        count
+        count,
       };
       console.log(statement);
       db.query(sql, statement, (err, result) => {
@@ -59,7 +59,7 @@ const getAllHistory = (keyword, query) => {
         if (result.length == 0)
           return resolve({
             status: 400,
-            result: { message: "Data not found", result }
+            result: { message: "Data not found", result },
           });
         resolve({ status: 200, result, meta });
       });
@@ -70,7 +70,7 @@ const getAllHistory = (keyword, query) => {
 // history by id
 const getHistoryById = (id) => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.id = ?`;
+    const sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.stock, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.id = ?`;
 
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err });
@@ -91,7 +91,7 @@ const newHistory = (body) => {
       return_date,
       total_price,
       rating,
-      testimony
+      testimony,
     } = body;
 
     const sql = "INSERT INTO history VALUES(null, ?,?,?,?,?,?,?,?)";
@@ -112,7 +112,7 @@ const newHistory = (body) => {
       dateInputReturn,
       total_price,
       rating,
-      testimony
+      testimony,
     ];
 
     db.query(sql, statement, (err, result) => {
@@ -130,8 +130,8 @@ const newHistory = (body) => {
           return_date,
           total_price,
           rating,
-          testimony
-        }
+          testimony,
+        },
       });
     });
   });
@@ -153,7 +153,7 @@ const deleteHistory = (id) => {
 // popular vehicles by rating
 const popular = (query) => {
   return new Promise((resolve, reject) => {
-    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.rating = 5 order by h.rating`;
+    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.stock , v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.rating = 5 order by h.rating`;
 
     const statement = [];
     const countQuery = `select count(*) as "count" from history`;
@@ -183,7 +183,7 @@ const popular = (query) => {
           ? null
           : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
-        count
+        count,
       };
       console.log(statement);
       db.query(sql, statement, (err, result) => {
@@ -191,7 +191,7 @@ const popular = (query) => {
         if (result.length == 0)
           return resolve({
             status: 400,
-            result: { message: "Data not found", result }
+            result: { message: "Data not found", result },
           });
         resolve({ status: 200, result, meta });
       });
@@ -210,5 +210,5 @@ module.exports = {
   newHistory,
   deleteHistory,
   popular,
-  getHistoryById
+  getHistoryById,
 };
