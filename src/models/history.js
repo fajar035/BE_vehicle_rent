@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const getAllHistory = (keyword, query) => {
   return new Promise((resolve, reject) => {
     // total = jumlah price
-    let sql = `SELECT h.id, u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.stock , v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
+    let sql = `SELECT h.id, u.id as "id_user", u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.stock , v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
     const statement = [];
     const order = query.sort;
     let orderBy = "";
