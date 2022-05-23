@@ -4,6 +4,7 @@ const resHelper = require("../helpers/response");
 // get all history
 const getAllHistory = (req, res) => {
   const { query } = req;
+
   let keyword = `%%`;
   if (query.cari) keyword = `'%${query.cari}%'`;
   historyModel
@@ -12,6 +13,7 @@ const getAllHistory = (req, res) => {
       return resHelper.success(res, status, { result, meta });
     })
     .catch(({ status, err }) => {
+      // console.log(status);
       return resHelper.fail(res, status, { err });
     });
 };
@@ -61,7 +63,7 @@ const popular = (req, res) => {
     .catch(({ status, err }) => {
       return res.status(status).json({
         message: "An error occurred on the server",
-        err
+        err,
       });
     });
 };
@@ -85,5 +87,5 @@ module.exports = {
   newHistory,
   deleteHistory,
   getHistoryById,
-  popular
+  popular,
 };

@@ -11,12 +11,19 @@ const getAllHistory = (keyword, query) => {
     const statement = [];
     const order = query.sort;
     let orderBy = "";
+
     if (query.by && query.by.toLowerCase() == "id") orderBy = "id";
     if (query.by && query.by.toLowerCase() == "name") orderBy = "name";
     if (query.by && query.by.toLowerCase() == "vehicle") orderBy = "vehicle";
-    if (keyword.length !== 2) {
+
+    if (keyword.length !== 2 && query.id_user === undefined) {
       sql += " WHERE u.name LIKE ?";
       statement.push(mysql.raw(keyword));
+    }
+
+    if (keyword.length === 2 && query.id_user !== undefined) {
+      sql += " WHERE u.id LIKE ?";
+      statement.push(mysql.raw(query.id_user));
     }
     if (order && orderBy) {
       sql += " ORDER BY ? ?";
@@ -53,7 +60,7 @@ const getAllHistory = (keyword, query) => {
         totalPage,
         count,
       };
-      console.log(statement);
+      // console.log(statement);
       db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err });
         if (result.length == 0)
