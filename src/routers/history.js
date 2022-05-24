@@ -1,20 +1,21 @@
-const express = require("express")
-const historyController = require("../controllers/history")
-const historyRouter = express.Router()
+const express = require("express");
+const historyController = require("../controllers/history");
+const { checkToken } = require("../middleware/authorize");
+const historyRouter = express.Router();
 
 // get all data
-historyRouter.get("/", historyController.getAllHistory)
+historyRouter.get("/", checkToken, historyController.getAllHistory);
 
 // get data by id
-historyRouter.get("/popular/:id", historyController.getHistoryById)
+historyRouter.get("/popular/:id", historyController.getHistoryById);
 
 // new data history
-historyRouter.post("/", historyController.newHistory)
+historyRouter.post("/", checkToken, historyController.newHistory);
 
 // delete data by id
-historyRouter.delete("/:id", historyController.deleteHistory)
+historyRouter.delete("/:id", checkToken, historyController.deleteHistory);
 
 // popular vehicles
-historyRouter.get("/popular", historyController.popular)
+historyRouter.get("/popular", historyController.popular);
 
-module.exports = historyRouter
+module.exports = historyRouter;
