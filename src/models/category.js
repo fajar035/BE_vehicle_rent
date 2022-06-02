@@ -1,3 +1,4 @@
+const { reject } = require("bcrypt/promises");
 const db = require("../configs/db");
 
 const getCategory = () => {
@@ -69,4 +70,40 @@ const newCategory = (body) => {
   });
 };
 
-module.exports = { getCategory, newCategory };
+const deleteCategory = (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = `DELETE FROM category WHERE id = ?`;
+    const checkId = id * 2;
+    if (isNaN(checkId))
+      return reject({
+        status: 400,
+        err: {
+          result: {
+            message: "Please fill in the correct id",
+          },
+        },
+      });
+    db.query(sql, [id], (err, result) => {
+      const { affectedRows } = result;
+      if (err) return reject({ status: 500, err });
+      if (affectedRows === 0)
+        return reject({
+          status: 404,
+          err: {
+            result: { id: id, message: "Data not found" },
+          },
+        });
+      resolve({
+        status: 200,
+        result: {
+          result: {
+            id: id,
+            message: "Category successfully deleted",
+          },
+        },
+      });
+    });
+  });
+};
+
+module.exports = { getCategory, newCategory, deleteCategory };
