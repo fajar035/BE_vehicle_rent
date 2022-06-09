@@ -82,10 +82,16 @@ const getHistoryById = (req, res) => {
     });
 };
 
+const updateHistory = (req, res) => {
+  const { body } = req;
+  console.log(body);
+};
+
 module.exports = {
   getAllHistory,
   newHistory,
   deleteHistory,
   getHistoryById,
   popular,
+  updateHistory,
 };

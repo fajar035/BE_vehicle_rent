@@ -16,7 +16,7 @@ const register = (body) => {
       if (result.length !== 0)
         return resolve({
           status: 406,
-          result: { message: "Email is already registered" }
+          result: { message: "Email is already registered" },
         });
       bcrypt
         .hash(body.password, 10)
@@ -24,7 +24,7 @@ const register = (body) => {
           const bodyWithHashedPassword = {
             ...body,
             password: hashedPassword,
-            role
+            role,
           };
 
           db.query(sqlInsert, [bodyWithHashedPassword], (err, result) => {
@@ -37,10 +37,10 @@ const register = (body) => {
                 account: {
                   id: insertId,
                   email,
-                  noHp
+                  noHp,
                 },
-                message: "Registerd Successfuly"
-              }
+                message: "Registerd Successfuly",
+              },
             });
           });
         })
@@ -69,13 +69,13 @@ const login = (body) => {
       )
         return reject({
           status: 401,
-          err: "Wrong Email or Password"
+          err: "Wrong Email or Password",
         });
 
       if (result.length == 0)
         return reject({
           status: 401,
-          err: "Wrong Email or Password"
+          err: "Wrong Email or Password",
         });
 
       const hash = result[0].password;
@@ -86,19 +86,19 @@ const login = (body) => {
         if (!resultCompare)
           return reject({
             status: 401,
-            err: "Wrong Email or Password"
+            err: "Wrong Email or Password",
           });
 
         const payload = {
           id: result[0].id,
           email: result[0].email,
           roles: result[0].role,
-          photo: result[0].photo
+          photo: result[0].photo,
         };
 
         const jwtOptions = {
           expiresIn: "1d",
-          issuer: process.env.ISSUER
+          issuer: process.env.ISSUER,
         };
 
         jwt.sign(payload, process.env.SECRET_KEY, jwtOptions, (err, token) => {
@@ -109,8 +109,8 @@ const login = (body) => {
             result: {
               token,
               photo,
-              role
-            }
+              role,
+            },
           });
         });
       });
@@ -139,13 +139,13 @@ const getOtp = (body) => {
         console.log(err);
         return reject({
           status: 500,
-          err: { msg: "Something went wrong", data: null }
+          err: { msg: "Something went wrong", data: null },
         });
       }
       if (result.length == 0)
         return reject({
           status: 401,
-          err: { msg: "Email is invalid", data: null }
+          err: { msg: "Email is invalid", data: null },
         });
       const name = result[0].name;
       const otp = Math.ceil(Math.random() * 1000 * 1000);
@@ -155,7 +155,7 @@ const getOtp = (body) => {
         if (err)
           return reject({
             status: 500,
-            err: { msg: "Something went wrong", data: null }
+            err: { msg: "Something went wrong", data: null },
           });
 
         sendForgotPass(email, { name: name, otp })
@@ -166,14 +166,14 @@ const getOtp = (body) => {
             console.log("ERROR NODEMAILER", err);
           });
         const data = {
-          email: email
+          email: email,
         };
         resolve({
           status: 200,
           result: {
             msg: "Please check your email bro",
-            data
-          }
+            data,
+          },
         });
       });
     });
@@ -190,7 +190,7 @@ const checkOtp = (body) => {
       if (result.length === 0)
         return reject({ status: 401, err: { msg: "Invalid OTP" } });
       const data = {
-        email: email
+        email: email,
       };
       resolve({ status: 200, result: { msg: "OTP is valid", data } });
     });
@@ -206,7 +206,7 @@ const resetPassword = (body) => {
       if (err)
         return reject({
           status: 500,
-          err: { msg: "Something went wrong", data: null }
+          err: { msg: "Something went wrong", data: null },
         });
 
       bcrypt
@@ -217,7 +217,7 @@ const resetPassword = (body) => {
             if (err) {
               return reject({
                 status: 500,
-                err: { msg: "Something went wrong", data: null }
+                err: { msg: "Something went wrong", data: null },
               });
             }
             console.log("EMAIL", email);
@@ -226,9 +226,9 @@ const resetPassword = (body) => {
               result: {
                 msg: "Reset password success",
                 data: {
-                  email
-                }
-              }
+                  email,
+                },
+              },
             });
           });
         })

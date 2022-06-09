@@ -5,11 +5,12 @@
     "es2021": true
   },
   "extends": ["standard"],
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 2015
   },
   "rules": {
-    "semi": "semi",
+    "semi": 1,
     "eqeqeq": "off",
     "curly": "off",
     "quotes": [0, "double"],

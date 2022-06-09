@@ -18,4 +18,6 @@ historyRouter.delete("/:id", checkToken, historyController.deleteHistory);
 // popular vehicles
 historyRouter.get("/popular", historyController.popular);
 
+historyRouter.patch("/", checkToken, historyController.updateHistory);
+
 module.exports = historyRouter;

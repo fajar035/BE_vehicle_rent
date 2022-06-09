@@ -24,7 +24,7 @@ vehicleRouter.patch(
   vehicleController.editVehicle
 );
 
-vehicleRouter.delete("/:id", vehicleController.deleteVehicle);
+vehicleRouter.delete("/:id", checkToken, vehicleController.deleteVehicle);
 
 // vehicleRouter.get("/location", vehicleController.getLocation)
 
