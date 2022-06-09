@@ -104,7 +104,7 @@ const getAllVehicle = (keyword, query, { category, location }) => {
           ? null
           : `/vehicles?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
-        count,
+        count
       };
 
       db.query(sql, statement, (err, result) => {
@@ -113,7 +113,7 @@ const getAllVehicle = (keyword, query, { category, location }) => {
         if (result.length == 0)
           return resolve({
             status: 400,
-            result: { data: "Data not found", result },
+            result: { data: "Data not found", result }
           });
         resolve({ status: 200, result: result, meta });
       });
@@ -146,7 +146,7 @@ const addVehicle = (body, inputPhoto) => {
       stock,
       category,
       location,
-      status,
+      status
     } = body;
 
     console.log(name);
@@ -164,7 +164,7 @@ const addVehicle = (body, inputPhoto) => {
       soft_delete,
       category,
       location,
-      status,
+      status
     ];
 
     db.query(sql, statement, (err, result) => {
@@ -182,8 +182,8 @@ const addVehicle = (body, inputPhoto) => {
           photos: inputPhoto,
           category: category,
           location: location,
-          status: status,
-        },
+          status: status
+        }
       });
     });
   });
@@ -194,15 +194,15 @@ const createSoftDelete = (id, body) => {
     const { softDelete } = body;
     if (!softDelete)
       return reject({
-        err: { status: 400, message: "Data cannot be empty" },
+        err: { status: 400, message: "Data cannot be empty" }
       });
     if (softDelete !== "0" && softDelete !== "1")
       return reject({
         err: {
           status: 400,
           message: "Incorrect input, please enter 0 or 1",
-          example: "0 = Restore Data, 1 = Delete Data",
-        },
+          example: "0 = Restore Data, 1 = Delete Data"
+        }
       });
 
     const sql = `UPDATE vehicles SET soft_delete = ? WHERE id = ?`;
@@ -213,16 +213,16 @@ const createSoftDelete = (id, body) => {
           result: {
             status: 200,
             id: id,
-            message: "Successfuly Delete Data",
-          },
+            message: "Successfuly Delete Data"
+          }
         });
       if (softDelete === "0")
         return resolve({
           result: {
             status: 200,
             id: id,
-            message: "Successfuly Restore Data",
-          },
+            message: "Successfuly Restore Data"
+          }
         });
     });
   });
@@ -239,7 +239,7 @@ const editVehicle = (id, body, bodyOld) => {
       category,
       location,
       status,
-      photos,
+      photos
     } = body;
     console.log("PHOTOS", photos);
 
@@ -252,7 +252,7 @@ const editVehicle = (id, body, bodyOld) => {
       photoOld,
       id_categoryOld,
       id_locationOld,
-      id_statusOld,
+      id_statusOld
     } = bodyOld;
     console.log("PHOTO-OLD", photoOld);
     if (!name) {
@@ -295,7 +295,7 @@ const editVehicle = (id, body, bodyOld) => {
       category,
       location,
       status,
-      id,
+      id
     ];
     console.log("STATEMENT", statement);
     db.query(sql, statement, (err, result) => {
@@ -317,8 +317,8 @@ const editVehicle = (id, body, bodyOld) => {
           photos: JSON.parse(photos),
           category: category,
           location: location,
-          status: status,
-        },
+          status: status
+        }
       });
     });
   });
@@ -326,6 +326,8 @@ const editVehicle = (id, body, bodyOld) => {
 
 const deleteVehicle = (id) => {
   return new Promise((resolve, reject) => {
+    if (id === undefined && id === null)
+      return reject({ status: 400, message: "Id vehicle NULL" });
     const sql = "DELETE FROM vehicles WHERE id = ?";
     db.query(sql, [id], (err, result) => {
       const { affectedRows } = result;
@@ -364,7 +366,7 @@ const uploadPhotoVehicle = (namePhotos, id) => {
       // console.log(result)
       resolve({
         status: 200,
-        result: { id: id, result: JSON.parse(inputPhoto) },
+        result: { id: id, result: JSON.parse(inputPhoto) }
       });
     });
   });
@@ -378,5 +380,5 @@ module.exports = {
   deleteVehicle,
   getPhotoVehicle,
   uploadPhotoVehicle,
-  createSoftDelete,
+  createSoftDelete
 };
