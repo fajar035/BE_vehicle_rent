@@ -13,11 +13,19 @@ historyRouter.get("/popular/:id", historyController.getHistoryById);
 historyRouter.post("/", checkToken, historyController.newHistory);
 
 // delete data by id
-historyRouter.delete("/:id", checkToken, historyController.deleteHistory);
+historyRouter.delete(
+  "/:id",
+  checkToken,
+  historyController.deleteHistory
+);
 
 // popular vehicles
 historyRouter.get("/popular", historyController.popular);
 
-historyRouter.patch("/", checkToken, historyController.updateHistory);
+historyRouter.patch(
+  "/:id",
+  checkToken,
+  historyController.updateHistory
+);
 
 module.exports = historyRouter;

@@ -39,7 +39,9 @@ const deleteHistory = (req, res) => {
     .deleteHistory(id)
     .then(({ status, result }) => {
       if (status === 404)
-        return res.status(status).json({ id: id, message: "Data not found" });
+        return res
+          .status(status)
+          .json({ id: id, message: "Data not found" });
       return res
         .status(status)
         .json({ id: id, message: "History deleted successfuly" });
@@ -63,7 +65,7 @@ const popular = (req, res) => {
     .catch(({ status, err }) => {
       return res.status(status).json({
         message: "An error occurred on the server",
-        err,
+        err
       });
     });
 };
@@ -83,8 +85,23 @@ const getHistoryById = (req, res) => {
 };
 
 const updateHistory = (req, res) => {
-  const { body } = req;
-  console.log(body);
+  const { body, params } = req;
+  const id = parseInt(params.id);
+  const rating = body.rating;
+  const url = req.originalUrl;
+
+  if (isNaN(id))
+    return resHelper.fail(res, 403, {
+      result: { url, message: "ID params must be number" }
+    });
+  historyModel
+    .updateRating(id, rating)
+    .then(({ status, result }) => {
+      return resHelper.success(res, status, { result });
+    })
+    .catch(({ status, err }) => {
+      return resHelper.fail(res, status, { err });
+    });
 };
 
 module.exports = {
@@ -93,5 +110,5 @@ module.exports = {
   deleteHistory,
   getHistoryById,
   popular,
-  updateHistory,
+  updateHistory
 };

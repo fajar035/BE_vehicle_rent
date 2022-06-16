@@ -14,8 +14,10 @@ const getAllHistory = (keyword, query) => {
     let orderBy = "";
 
     if (query.by && query.by.toLowerCase() == "id") orderBy = "id";
-    if (query.by && query.by.toLowerCase() == "name") orderBy = "name";
-    if (query.by && query.by.toLowerCase() == "vehicle") orderBy = "vehicle";
+    if (query.by && query.by.toLowerCase() == "name")
+      orderBy = "name";
+    if (query.by && query.by.toLowerCase() == "vehicle")
+      orderBy = "vehicle";
 
     if (keyword.length !== 2 && query.id_user === undefined) {
       sql += " WHERE u.name LIKE ?";
@@ -52,14 +54,18 @@ const getAllHistory = (keyword, query) => {
           ? null
           : page == Math.ceil(count / limit)
           ? null
-          : `/history?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+          : `/history?by=id&order=asc&page=${
+              page + 1
+            }&limit=${limit}`,
         prev: isNaN(limit)
           ? null
           : page == 1 || page == 0
           ? null
-          : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+          : `/history?by=id&order=asc&page=${
+              page - 1
+            }&limit=${limit}`,
         totalPage,
-        count,
+        count
       };
       // console.log(statement);
       db.query(sql, statement, (err, result) => {
@@ -67,7 +73,7 @@ const getAllHistory = (keyword, query) => {
         if (result.length == 0)
           return resolve({
             status: 400,
-            result: { message: "Data not found", result },
+            result: { message: "Data not found", result }
           });
         resolve({ status: 200, result, meta });
       });
@@ -99,7 +105,7 @@ const newHistory = (body) => {
       return_date,
       total_price,
       rating,
-      testimony,
+      testimony
     } = body;
 
     const sql = "INSERT INTO history VALUES(null, ?,?,?,?,?,?,?,?)";
@@ -120,7 +126,7 @@ const newHistory = (body) => {
       dateInputReturn,
       total_price,
       rating,
-      testimony,
+      testimony
     ];
 
     db.query(sql, statement, (err, result) => {
@@ -138,8 +144,8 @@ const newHistory = (body) => {
           return_date,
           total_price,
           rating,
-          testimony,
-        },
+          testimony
+        }
       });
     });
   });
@@ -184,14 +190,18 @@ const popular = (query) => {
           ? null
           : page == Math.ceil(count / limit)
           ? null
-          : `/history?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+          : `/history?by=id&order=asc&page=${
+              page + 1
+            }&limit=${limit}`,
         prev: isNaN(limit)
           ? null
           : page == 1 || page == 0
           ? null
-          : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+          : `/history?by=id&order=asc&page=${
+              page - 1
+            }&limit=${limit}`,
         totalPage,
-        count,
+        count
       };
       console.log(statement);
       db.query(sql, statement, (err, result) => {
@@ -200,7 +210,7 @@ const popular = (query) => {
         if (result.length == 0)
           return resolve({
             status: 400,
-            result: { message: "Data not found", result },
+            result: { message: "Data not found", result }
           });
         resolve({ status: 200, result, meta });
       });
@@ -216,7 +226,59 @@ const popular = (query) => {
 
 const updateRating = (idHistory, rating) => {
   return new Promise((resolve, reject) => {
-    const sql = `UPDATE history SET rating = ? WHERE id = ?`;
+    // console.log("ID HISTORY", idHistory);
+    // console.log("RATING", rating);
+    const ratingNum = parseInt(rating);
+
+    if (!rating)
+      return resolve({
+        status: 400,
+        result: {
+          id: idHistory,
+          message: "Rating can't be empty"
+        }
+      });
+    if (isNaN(ratingNum)) {
+      return resolve({
+        status: 400,
+        result: {
+          id: idHistory,
+          message: "Rating must be number data type"
+        }
+      });
+    }
+
+    if (ratingNum > 5) {
+      return resolve({
+        status: 400,
+        result: {
+          id: idHistory,
+          message: "Wrong input, Rating 1 - 5"
+        }
+      });
+    }
+    if (typeof ratingNum !== "Number") {
+      const sql = `UPDATE history SET rating = ? WHERE id = ?`;
+      db.query(sql, [ratingNum, idHistory], (err) => {
+        if (err) return reject({ status: 500, err });
+
+        return resolve({
+          status: 200,
+          result: {
+            id: idHistory,
+            message: "Successfuly changed data"
+          }
+        });
+      });
+    } else {
+      return resolve({
+        status: 400,
+        result: {
+          id: idHistory,
+          message: "Wrong input, Rating must be number"
+        }
+      });
+    }
   });
 };
 
@@ -226,5 +288,5 @@ module.exports = {
   deleteHistory,
   popular,
   getHistoryById,
-  updateRating,
+  updateRating
 };
