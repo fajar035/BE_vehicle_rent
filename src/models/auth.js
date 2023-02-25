@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("../configs/db");
 const { sendForgotPass } = require("../helpers/sendOtp");
@@ -18,7 +18,7 @@ const register = (body) => {
           status: 406,
           result: { message: "Email is already registered" },
         });
-      bcrypt
+        bcrypt
         .hash(body.password, 10)
         .then((hashedPassword) => {
           const bodyWithHashedPassword = {

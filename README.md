@@ -31,7 +31,7 @@ Vehicle Rental is a modern application for booking a vehicle. We have modern and
 ### Using Package
 
 <ol>
-<li>*. [bcrypt](https://www.npmjs.com/package/bcrypt)</li>
+<li>*. [bcryptjs](https://www.npmjs.com/package/bcryptjs)</li>
 <li>*. [cors](https://www.npmjs.com/package/cors)</li>
 <li>*. [dotenv](https://www.npmjs.com/package/dotenv)</li>
 <li>*. [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)</li>

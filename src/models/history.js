@@ -1,6 +1,5 @@
 const db = require("../configs/db");
 const mysql = require("mysql");
-const { reject } = require("bcrypt/promises");
 // const moment = require("moment")
 // const { format } = require("../configs/db")
 

@@ -1,4 +1,4 @@
-const { reject } = require("bcrypt/promises");
+
 const db = require("../configs/db");
 
 const getCategory = () => {

@@ -1,8 +1,7 @@
 /* eslint-disable indent */
-const { reject } = require("bcrypt/promises");
 const mysql = require("mysql");
 const db = require("../configs/db");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 // get all Profile, by order id & name
 const getAllProfile = (keyword, query, userInfo) => {
@@ -151,7 +150,7 @@ const updatePassword = (oldPassword, newPassword, id) => {
       const passwordDB = result[0].password;
       bcrypt.compare(oldPassword, passwordDB, (err, result) => {
         if (err)
-          return reject({ status: 400, message: "Compare bcrypt Failed", err });
+          return reject({ status: 400, message: "Compare bcryptjs Failed", err });
         console.log("RESULT HASED", result);
         if (result === false) {
           const error = new Error("Old password is incorrect");
@@ -172,7 +171,7 @@ const updatePassword = (oldPassword, newPassword, id) => {
             });
           })
           .catch((err) => {
-            return reject({ status: 500, message: "bcrypt hash eror", err });
+            return reject({ status: 500, message: "bcryptjs hash eror", err });
           });
       });
     });

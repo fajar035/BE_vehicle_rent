@@ -1,5 +1,4 @@
 /* eslint-disable indent */
-const { reject } = require("bcrypt/promises");
 const mysql = require("mysql");
 const db = require("../configs/db");
 
