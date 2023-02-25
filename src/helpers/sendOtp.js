@@ -106,8 +106,6 @@ exports.sendForgotPass = (email, data) => {
       </body>
       </html>`
     };
-
-    console.log("LOADING RESPONSE EMAIL ...");
     transporter.sendMail(message, (error, info) => {
       if (error) {
         console.log("Failed to send email ...", error);
