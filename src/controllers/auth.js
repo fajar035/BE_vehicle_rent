@@ -15,14 +15,13 @@ const register = (req, res) => {
 
 const login = (req, res) => {
   const { body } = req;
-  // console.log(req.userInfo)
   authModel
     .login(body)
     .then(({ status, result }) => {
       resHelper.success(res, status, { result });
     })
     .catch(({ status, err }) => {
-      res.status(status).json({ err });
+      resHelper.fail(res, status, { err })
     });
 };
 
@@ -45,9 +44,11 @@ const getOtp = (req, res) => {
   authModel
     .getOtp(body)
     .then(({ status, result }) => {
+      console.log(result)
       return resHelper.success(res, status, result);
     })
     .catch(({ status, err }) => {
+      console.log(status, err)
       return resHelper.fail(res, status, err);
     });
 };

@@ -58,7 +58,6 @@ const login = (body) => {
 
     db.query(sqlQuery, [email], (err, result) => {
       if (err) return reject({ status: 500, err });
-      // console.log(result)
       const sqlGetPhoto = `SELECT photo from users where id = ?`;
 
       if (
@@ -82,7 +81,6 @@ const login = (body) => {
 
       bcrypt.compare(password, hash, (err, resultCompare) => {
         if (err) return reject(err);
-
         if (!resultCompare)
           return reject({
             status: 401,
@@ -159,24 +157,29 @@ const getOtp = (body) => {
           });
 
         sendForgotPass(email, { name: name, otp })
-          .then((res) => {
-            console.log("RES NODEMAILER", res);
+          .then(() => {
+            const data = {
+              email: email,
+            };
+            return resolve({
+              status: 200,
+              result: {
+                msg: "Please check your email bro",
+                data,
+              },
+            });
           })
           .catch((err) => {
-            console.log("ERROR NODEMAILER", err);
+            if (err) return reject({
+              status: 500,
+              err: {
+                msg: "Failed to send email ..",
+              }
+            })
           });
-        const data = {
-          email: email,
-        };
-        resolve({
-          status: 200,
-          result: {
-            msg: "Please check your email bro",
-            data,
-          },
-        });
       });
     });
+
   });
 };
 

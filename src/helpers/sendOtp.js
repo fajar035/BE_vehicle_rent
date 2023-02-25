@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "hotmail",
+  service: 'hotmail',
   auth: {
     user: process.env.EMAIL_SENDER,
     pass: process.env.PASSWORD_SENDER
@@ -9,9 +9,6 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.sendForgotPass = (email, data) => {
-  console.log(process.env.EMAIL_SENDER, process.env.PASSWORD_SENDER);
-  console.log("data", data);
-  console.log("email", email);
   return new Promise((resolve, reject) => {
     const message = {
       from: `"Vehicle Rental 🚗" <${process.env.EMAIL_SENDER}>`,
