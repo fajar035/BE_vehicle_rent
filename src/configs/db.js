@@ -10,7 +10,7 @@ const db = mysql.createConnection({
 // cek koneksi
 db.connect((err) => {
   if (err) return console.log(`${err}`)
-  return console.log("Connected Database")
+  return console.log("Connected Database ..")
 })
 
 module.exports = db
