@@ -8,6 +8,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+
 exports.sendForgotPass = (email, data) => {
   return new Promise((resolve, reject) => {
     const message = {
