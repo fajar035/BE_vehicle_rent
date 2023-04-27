@@ -24,7 +24,7 @@ server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 server.use(logger);
 server.use(mainRouter);
-server.use("/users/photo", express.static(path.join(__dirname, "public/tmp")));
+server.use("/users/photo", express.static(path.join(__dirname, "tmp")));
 server.use(
   "/vehicles/photo",
   express.static(path.join(__dirname, "public/tmp"))
