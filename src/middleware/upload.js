@@ -3,7 +3,7 @@ const path = require("path")
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./public/tmp")
+    cb(null, "./tmp")
   },
   filename: (req, file, cb) => {
     const format = `${file.fieldname}-${Math.random()}${path.extname(
