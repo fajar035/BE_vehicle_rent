@@ -201,7 +201,6 @@ const editProfile = (body, userInfo, bodyOld) => {
     };
 
     let dateQuery = dob;
-    console.log("DOB", dateQuery);
 
     if (!name) {
       name = nameOld;
