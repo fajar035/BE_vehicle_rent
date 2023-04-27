@@ -9,7 +9,7 @@ const getAllProfile = (keyword, query, userInfo) => {
     const { roles } = userInfo;
 
     let sql =
-      "SELECT  id, name, email ,gender, dob, nohp, address, photo FROM users";
+      "SELECT  id, name, email ,gender, dob, nohp, address, photo, createdAt FROM users";
     const statement = [];
 
     const order = query.order;
@@ -88,11 +88,12 @@ const getAllProfile = (keyword, query, userInfo) => {
 const getProfileById = (id) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT id, name, gender,email,dob, nohp, address, photo FROM users WHERE id = ?";
+      "SELECT id, name, gender,email,dob, nohp, address, photo, createdAt FROM users WHERE id = ?";
 
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err });
       if (result.length == 0) return resolve({ status: 404, result });
+      console.log("RESULT : ", result)
       resolve({ status: 200, result });
     });
   });

@@ -26,7 +26,7 @@ const getProfileById = (req, res) => {
   usersModel
     .getProfileById(id)
     .then(({ status, result }) => {
-      const { id, name, gender, email, dob, nohp, address, photo } = result[0];
+      const { id, name, gender, email, dob, nohp, address, photo, createdAt } = result[0];
 
       function formatDate(date) {
         const d = new Date(date);
@@ -54,7 +54,8 @@ const getProfileById = (req, res) => {
           birtday,
           phone: nohp,
           address,
-          photo
+          photo,
+          createdAt
         }
       });
     })

@@ -9,6 +9,9 @@ const register = (body) => {
     const sqlInsert = "INSERT INTO users SET ?";
     const checkEmail = "SELECT email FROM users WHERE email = ?";
     const role = 3;
+    const dateNow = new Date()
+    const createdAt = `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}`
+    // const createAt = 'asdads'
 
     db.query(checkEmail, [email], (err, result) => {
       if (err) return reject({ status: 500, err });
@@ -25,6 +28,7 @@ const register = (body) => {
             ...body,
             password: hashedPassword,
             role,
+            createdAt
           };
 
           db.query(sqlInsert, [bodyWithHashedPassword], (err, result) => {
