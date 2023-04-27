@@ -183,7 +183,7 @@ const updatePassword = (oldPassword, newPassword, id) => {
 const editProfile = (body, userInfo, bodyOld) => {
   return new Promise((resolve, reject) => {
     let { name, gender, dob, nohp, address, photo, email } = body;
-    // console.log("BODY-MODEL", photo)
+
     const {
       nameOld,
       genderOld,
@@ -194,8 +194,6 @@ const editProfile = (body, userInfo, bodyOld) => {
       emailOld
     } = bodyOld;
     const { id } = userInfo;
-
-    // console.log("FILE-PHOTO", file.filename)
 
     const formatDate = (date) => {
       const dateStr = date.split("-");
