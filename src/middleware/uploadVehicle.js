@@ -1,23 +1,32 @@
-const multer = require("multer");
 const path = require("path");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./public/tmp");
+// Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "vehicle_rental_api/vehicles",
+    format: async (req, file) => "jpg", // supports promises as well
+    public_id: (req, file) => {
+      const { email } = req.userInfo;
+      const nameEmail = email.replace(/@.*$/, "");
+      const format = `${file.fieldname}-${nameEmail}${path.extname(
+        file.originalname
+      )}`;
+      return format;
+    },
   },
-  filename: (req, file, cb) => {
-    // const { id } = req.params
-    // console.log(file)
-    const format = `${file.fieldname}-${Math.random()}${path.extname(
-      file.originalname
-    )}`;
-    // console.log(format)
-    cb(null, format);
-  }
 });
 
 const multerOptions = {
-  storage,
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
   fileFilter: (req, file, cb) => {
     if (
@@ -29,49 +38,41 @@ const multerOptions = {
       cb(null, true);
     } else {
       cb(null, false);
-      const err = new Error(
-        "Only .png, .jpg and .jpeg format allowed!"
-      );
+      const err = new Error();
       err.name = "ExtensionError";
+      err.code = "WRONG_EXSTENSION";
       return cb(err);
     }
-  }
+  },
 };
 
-const multi_upload = multer(multerOptions).array(
-  "uploadPhotoVehicle",
-  3
+const { limits, fileFilter } = multerOptions;
+const upload = multer({ storage, limits, fileFilter }).array(
+  "uploadPhotoVehicle"
 );
 
 const multerHandler = (req, res, next) => {
-  multi_upload(req, res, (err) => {
-    console.log(err);
+  upload(req, res, (err) => {
     if (err) {
       if (err.code === "LIMIT_FILE_SIZE") {
         return res.status(400).json({
+          err: err.code,
           errMsg: `Image size mustn't be bigger than 2MB!`,
-          err: err.code
         });
       }
-      if (err.code === "WRONG_EXSTENSION") {
+      if (err.name === "ExtensionError") {
         return res.status(400).json({
+          err: err.code,
           errMsg: `Only .png, .jpg and .jpeg format allowed!`,
-          err: err.code
         });
       }
       return res.status(500).json({
         errMsg: `Something went wrong.`,
-        err
+        err,
       });
     }
-
     next();
   });
 };
-
-// const uploadMulti = { multi_upload }
-// const multerOptions = { storage }
-// module.exports = multer(multerOptions)
-// module.exports = multer(uploadMulti)
 
 module.exports = multerHandler;
