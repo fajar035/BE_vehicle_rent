@@ -2,7 +2,7 @@ const express = require("express");
 const usersControllers = require("../controllers/users");
 const { checkToken } = require("../middleware/authorize");
 const usersRouter = express.Router();
-const upload = require("../middleware/upload");
+const uploadNew = require("../middleware/uploadNew");
 const getUser = require("../middleware/user");
 
 usersRouter.get("/", checkToken, usersControllers.getAllProfile);
@@ -21,7 +21,7 @@ usersRouter.get("/photo", checkToken, usersControllers.getPhoto);
 usersRouter.patch(
   "/edit",
   checkToken,
-  upload,
+  uploadNew,
   getUser.getUser,
   usersControllers.editProfile
 );
