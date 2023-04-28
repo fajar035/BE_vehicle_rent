@@ -11,17 +11,17 @@ usersRouter.get("/photo", checkToken, usersControllers.getPhoto);
 
 // usersRouter.post("/", checkToken, usersControllers.addProfile)
 
-usersRouter.post(
-  "/upload",
-  checkToken,
-  upload.single("user"),
-  usersControllers.uploadPhoto
-);
+// usersRouter.post(
+//   "/upload",
+//   checkToken,
+//   upload.single("user"),
+//   usersControllers.uploadPhoto
+// );
 
 usersRouter.patch(
   "/edit",
   checkToken,
-  upload.single("photoUser"),
+  upload,
   getUser.getUser,
   usersControllers.editProfile
 );

@@ -26,7 +26,8 @@ const getProfileById = (req, res) => {
   usersModel
     .getProfileById(id)
     .then(({ status, result }) => {
-      const { id, name, gender, email, dob, nohp, address, photo, createdAt } = result[0];
+      const { id, name, gender, email, dob, nohp, address, photo, createdAt } =
+        result[0];
 
       function formatDate(date) {
         const d = new Date(date);
@@ -43,7 +44,7 @@ const getProfileById = (req, res) => {
 
       if (status === 404)
         return resHelper.success(res, status, {
-          message: "User not found"
+          message: "User not found",
         });
       return resHelper.success(res, status, {
         result: {
@@ -55,15 +56,15 @@ const getProfileById = (req, res) => {
           phone: nohp,
           address,
           photo,
-          createdAt
-        }
+          createdAt,
+        },
       });
     })
     .catch(({ status, err }) => {
       console.log(err);
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
-        err
+        err,
       });
     });
 };
@@ -81,7 +82,7 @@ const addProfile = (req, res) => {
 
       res.status(status).json({
         message: "Add new profile successfuly",
-        result
+        result,
       });
       // const {name, gender, phoneNumber, dateOfBirth, address, photo} = result
       // cek data jika tidak ada
@@ -95,18 +96,18 @@ const addProfile = (req, res) => {
 
 // edit profile
 const editProfile = (req, res) => {
-  let { body, userInfo, bodyOld, file } = req;
+  let { body, userInfo, bodyOld, file, urlPhoto } = req;
   // console.log("FILE", file)
   // console.log("BODY", body)
 
   if (!file) {
     body = {
-      ...body
+      ...body,
     };
   } else {
     body = {
       ...body,
-      photo: `/users/photo/${file.filename}`
+      photo: urlPhoto,
     };
   }
 
@@ -121,8 +122,8 @@ const editProfile = (req, res) => {
           result: {
             id: id,
             status: status,
-            message: "User not found"
-          }
+            message: "User not found",
+          },
         });
       resHelper.success(res, status, { message, result });
     })
@@ -137,7 +138,7 @@ const updatePassword = (req, res) => {
   const { newPassword, oldPassword } = body;
   if (newPassword === oldPassword)
     return resHelper.fail(res, 401, {
-      message: "New password cannot be the same as old password"
+      message: "New password cannot be the same as old password",
     });
   const { id } = userInfo;
 
@@ -146,7 +147,7 @@ const updatePassword = (req, res) => {
     .then(({ status, result }) => {
       resHelper.success(res, status, {
         id: result.id,
-        message: result.message
+        message: result.message,
       });
     })
     .catch(({ status, err, message }) => {
@@ -169,13 +170,13 @@ const uploadPhoto = (req, res) => {
     .then(({ status, result }) => {
       return resHelper.success(res, status, {
         message: "Upload Successfuly",
-        result: result
+        result: result,
       });
     })
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
-        err
+        err,
       });
     });
 };
@@ -191,17 +192,17 @@ const deleteProfile = (req, res) => {
       if (status === 404)
         return resHelper.success(res, status, {
           id: id,
-          message: "User not found"
+          message: "User not found",
         });
       return resHelper.success(res, status, {
         id: id,
-        message: "Data deleted successfully"
+        message: "Data deleted successfully",
       });
     })
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
-        err
+        err,
       });
     });
 };
@@ -217,7 +218,7 @@ const getPhoto = (req, res) => {
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
-        err
+        err,
       });
     });
 };
@@ -230,5 +231,5 @@ module.exports = {
   deleteProfile,
   uploadPhoto,
   getPhoto,
-  updatePassword
+  updatePassword,
 };
