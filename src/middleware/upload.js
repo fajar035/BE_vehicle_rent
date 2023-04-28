@@ -51,6 +51,7 @@ const upload = multer({ storage, limits, fileFilter }).single("photoUser");
 
 const multerHandler = (req, res, next) => {
   upload(req, res, (err) => {
+    const { path } = req.file;
     if (err) {
       if (err.code === "LIMIT_FILE_SIZE") {
         return res.status(400).json({
@@ -69,6 +70,7 @@ const multerHandler = (req, res, next) => {
         err,
       });
     }
+    req.urlPhoto = path;
     next();
   });
 };

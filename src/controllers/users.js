@@ -97,8 +97,6 @@ const addProfile = (req, res) => {
 // edit profile
 const editProfile = (req, res) => {
   let { body, userInfo, bodyOld, file, urlPhoto } = req;
-  // console.log("FILE", file)
-  // console.log("BODY", body)
 
   if (!file) {
     body = {
