@@ -13,10 +13,8 @@ const getAllHistory = (keyword, query) => {
     let orderBy = "";
 
     if (query.by && query.by.toLowerCase() == "id") orderBy = "id";
-    if (query.by && query.by.toLowerCase() == "name")
-      orderBy = "name";
-    if (query.by && query.by.toLowerCase() == "vehicle")
-      orderBy = "vehicle";
+    if (query.by && query.by.toLowerCase() == "name") orderBy = "name";
+    if (query.by && query.by.toLowerCase() == "vehicle") orderBy = "vehicle";
 
     if (keyword.length !== 2 && query.id_user === undefined) {
       sql += " WHERE u.name LIKE ?";
@@ -53,18 +51,14 @@ const getAllHistory = (keyword, query) => {
           ? null
           : page == Math.ceil(count / limit)
           ? null
-          : `/history?by=id&order=asc&page=${
-              page + 1
-            }&limit=${limit}`,
+          : `/history?by=id&order=asc&page=${page + 1}&limit=${limit}`,
         prev: isNaN(limit)
           ? null
           : page == 1 || page == 0
           ? null
-          : `/history?by=id&order=asc&page=${
-              page - 1
-            }&limit=${limit}`,
+          : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
-        count
+        count,
       };
       // console.log(statement);
       db.query(sql, statement, (err, result) => {
@@ -72,7 +66,7 @@ const getAllHistory = (keyword, query) => {
         if (result.length == 0)
           return resolve({
             status: 400,
-            result: { message: "Data not found", result }
+            result: { message: "Data not found", result },
           });
         resolve({ status: 200, result, meta });
       });
@@ -104,7 +98,7 @@ const newHistory = (body) => {
       return_date,
       total_price,
       rating,
-      testimony
+      testimony,
     } = body;
 
     const sql = "INSERT INTO history VALUES(null, ?,?,?,?,?,?,?,?)";
@@ -125,7 +119,7 @@ const newHistory = (body) => {
       dateInputReturn,
       total_price,
       rating,
-      testimony
+      testimony,
     ];
 
     db.query(sql, statement, (err, result) => {
@@ -143,8 +137,8 @@ const newHistory = (body) => {
           return_date,
           total_price,
           rating,
-          testimony
-        }
+          testimony,
+        },
       });
     });
   });
@@ -166,7 +160,7 @@ const deleteHistory = (id) => {
 // popular vehicles by rating
 const popular = (query) => {
   return new Promise((resolve, reject) => {
-    let sql = `SELECT h.id, u.id as "id_user", v.id as "id_vehicle",u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.stock , v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.rating = 5 order by h.rating`;
+    let sql = `SELECT h.id, u.id as "id_user", v.id as "id_vehicle",u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.stock , v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id where h.rating = 5 OR h.rating = 4 order by h.rating`;
 
     const statement = [];
     const countQuery = `select count(*) as "count" from history`;
@@ -189,18 +183,14 @@ const popular = (query) => {
           ? null
           : page == Math.ceil(count / limit)
           ? null
-          : `/history?by=id&order=asc&page=${
-              page + 1
-            }&limit=${limit}`,
+          : `/history?by=id&order=asc&page=${page + 1}&limit=${limit}`,
         prev: isNaN(limit)
           ? null
           : page == 1 || page == 0
           ? null
-          : `/history?by=id&order=asc&page=${
-              page - 1
-            }&limit=${limit}`,
+          : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
-        count
+        count,
       };
       console.log(statement);
       db.query(sql, statement, (err, result) => {
@@ -209,7 +199,7 @@ const popular = (query) => {
         if (result.length == 0)
           return resolve({
             status: 400,
-            result: { message: "Data not found", result }
+            result: { message: "Data not found", result },
           });
         resolve({ status: 200, result, meta });
       });
@@ -234,16 +224,16 @@ const updateRating = (idHistory, rating) => {
         status: 400,
         result: {
           id: idHistory,
-          message: "Rating can't be empty"
-        }
+          message: "Rating can't be empty",
+        },
       });
     if (isNaN(ratingNum)) {
       return resolve({
         status: 400,
         result: {
           id: idHistory,
-          message: "Rating must be number data type"
-        }
+          message: "Rating must be number data type",
+        },
       });
     }
 
@@ -252,8 +242,8 @@ const updateRating = (idHistory, rating) => {
         status: 400,
         result: {
           id: idHistory,
-          message: "Wrong input, Rating 1 - 5"
-        }
+          message: "Wrong input, Rating 1 - 5",
+        },
       });
     }
     if (typeof ratingNum !== "Number") {
@@ -265,8 +255,8 @@ const updateRating = (idHistory, rating) => {
           status: 200,
           result: {
             id: idHistory,
-            message: "Successfuly changed data"
-          }
+            message: "Successfuly changed data",
+          },
         });
       });
     } else {
@@ -274,8 +264,8 @@ const updateRating = (idHistory, rating) => {
         status: 400,
         result: {
           id: idHistory,
-          message: "Wrong input, Rating must be number"
-        }
+          message: "Wrong input, Rating must be number",
+        },
       });
     }
   });
@@ -287,5 +277,5 @@ module.exports = {
   deleteHistory,
   popular,
   getHistoryById,
-  updateRating
+  updateRating,
 };
