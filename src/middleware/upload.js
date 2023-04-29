@@ -18,9 +18,7 @@ const storage = new CloudinaryStorage({
     public_id: (req, file) => {
       const { email } = req.userInfo;
       const nameEmail = email.replace(/@.*$/, "");
-      const format = `${file.fieldname}-${nameEmail}${path.extname(
-        file.originalname
-      )}`;
+      const format = `${file.fieldname}-${nameEmail}`;
       return format;
     },
   },
@@ -51,7 +49,11 @@ const upload = multer({ storage, limits, fileFilter }).single("photoUser");
 
 const multerHandler = (req, res, next) => {
   upload(req, res, (err) => {
-    const { path } = req.file;
+    console.log(req.file);
+    if (req.file) {
+      const { path } = req.file;
+      req.urlPhoto = path;
+    }
     if (err) {
       if (err.code === "LIMIT_FILE_SIZE") {
         return res.status(400).json({
@@ -70,7 +72,7 @@ const multerHandler = (req, res, next) => {
         err,
       });
     }
-    req.urlPhoto = path;
+
     next();
   });
 };

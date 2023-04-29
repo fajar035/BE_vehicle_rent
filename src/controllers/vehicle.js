@@ -7,7 +7,7 @@ const getAllVehicle = (req, res) => {
   // let keywordFilter = ``;
   const filter = {
     category: "",
-    location: ""
+    location: "",
   };
 
   if (query.search) keyword = `'%${query.search}%'`;
@@ -42,13 +42,13 @@ const addVehicle = (req, res) => {
   const namePhotos = [];
   if (dataPhotos) {
     for (let index = 0; index < files.length; index++) {
-      namePhotos.push(files[index].filename);
+      namePhotos.push(files[index].path);
     }
   }
 
   if (namePhotos.length !== 0) {
     const photos = namePhotos.map((item) => {
-      const filePath = `/vehicles/photo/${item}`;
+      const filePath = item;
       return filePath;
     });
     // eslint-disable-next-line no-var
@@ -93,12 +93,12 @@ const editVehicle = (req, res) => {
   const namePhotos = [];
   if (dataPhotos) {
     for (let index = 0; index < files.length; index++) {
-      namePhotos.push(files[index].filename);
+      namePhotos.push(files[index].path);
     }
   }
   if (namePhotos.length !== 0) {
     const photos = namePhotos.map((item) => {
-      const filePath = `/vehicles/photo/${item}`;
+      const filePath = item;
       return filePath;
     });
     // eslint-disable-next-line no-var
@@ -108,11 +108,11 @@ const editVehicle = (req, res) => {
   if (dataPhotos) {
     body = {
       ...body,
-      photos: inputPhoto
+      photos: inputPhoto,
     };
   } else {
     body = {
-      ...body
+      ...body,
     };
   }
 
@@ -124,8 +124,8 @@ const editVehicle = (req, res) => {
           result: {
             id: id,
             status: status,
-            message: "User not found"
-          }
+            message: "User not found",
+          },
         });
       resHelper.success(res, status, { message, result });
     })
@@ -171,13 +171,13 @@ const uploadPhotoVehicle = (req, res) => {
     .then(({ status, result }) => {
       return resHelper.success(res, status, {
         message: "Upload Successfuly",
-        result: result
+        result: result,
       });
     })
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
-        err
+        err,
       });
     });
 };
@@ -192,7 +192,7 @@ const getPhotoVehicle = (req, res) => {
     })
     .catch(({ status, err }) => {
       return resHelper.fail(res, status, {
-        message: "An error occurred on the server"
+        message: "An error occurred on the server",
       });
     });
 };
@@ -205,5 +205,5 @@ module.exports = {
   deleteVehicle,
   getPhotoVehicle,
   uploadPhotoVehicle,
-  softDeleteVehicle
+  softDeleteVehicle,
 };

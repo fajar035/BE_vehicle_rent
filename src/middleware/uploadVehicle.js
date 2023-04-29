@@ -18,9 +18,7 @@ const storage = new CloudinaryStorage({
     public_id: (req, file) => {
       const { email } = req.userInfo;
       const nameEmail = email.replace(/@.*$/, "");
-      const format = `${file.fieldname}-${nameEmail}${path.extname(
-        file.originalname
-      )}`;
+      const format = `${nameEmail}-${file.originalname}`;
       return format;
     },
   },
