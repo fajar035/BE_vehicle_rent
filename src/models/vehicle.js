@@ -8,13 +8,13 @@ const getAllVehicle = (keyword, query, { category, location }) => {
       "SELECT vehicles.id, vehicles.name, vehicles.description, vehicles.capacity, vehicles.price,vehicles.stock, vehicles.photo, vehicles.soft_delete ,category.category, location.location, status.status FROM vehicles JOIN category ON vehicles.id_category = category.id JOIN location ON vehicles.id_location = location.id JOIN status ON vehicles.id_status = status.id";
     const statement = [];
     const order = query.order;
+    const sort = query.sort;
     const softDelete = query.softdelete;
-    // console.log("SOFT DELETE", typeof softDelete);
 
     let orderBy = "";
-    if (query.order && query.order.toLowerCase() == "id") orderBy = "id";
-    if (query.order && query.order.toLowerCase() == "name") orderBy = "name";
-    if (query.order && query.order.toLowerCase() == "price") orderBy = "price";
+    if (order && order.toLowerCase() == "id") orderBy = "id";
+    if (order && order.toLowerCase() == "name") orderBy = "name";
+    if (order && order.toLowerCase() == "price") orderBy = "price";
 
     // jika ada cari
     if (keyword.length !== 2) {
@@ -65,9 +65,9 @@ const getAllVehicle = (keyword, query, { category, location }) => {
       statement.push(mysql.raw(category));
     }
 
-    if (order && orderBy) {
+    if (sort && orderBy) {
       sql += " ORDER BY ? ?";
-      statement.push(mysql.raw(orderBy), mysql.raw(order));
+      statement.push(mysql.raw(order), mysql.raw(sort));
     }
 
     if (softDelete !== undefined && softDelete !== "") {
@@ -103,16 +103,15 @@ const getAllVehicle = (keyword, query, { category, location }) => {
           ? null
           : `/vehicles?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
-        count
+        count,
       };
 
       db.query(sql, statement, (err, result) => {
-        // console.log(result);
         if (err) return reject({ status: 500, err });
         if (result.length == 0)
           return resolve({
-            status: 400,
-            result: { data: "Data not found", result }
+            status: 404,
+            result: { data: "Data not found", result },
           });
         resolve({ status: 200, result: result, meta });
       });
@@ -145,10 +144,8 @@ const addVehicle = (body, inputPhoto) => {
       stock,
       category,
       location,
-      status
+      status,
     } = body;
-
-    console.log(name);
 
     const sql =
       "INSERT INTO vehicles VALUES(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -163,7 +160,7 @@ const addVehicle = (body, inputPhoto) => {
       soft_delete,
       category,
       location,
-      status
+      status,
     ];
 
     db.query(sql, statement, (err, result) => {
@@ -181,8 +178,8 @@ const addVehicle = (body, inputPhoto) => {
           photos: inputPhoto,
           category: category,
           location: location,
-          status: status
-        }
+          status: status,
+        },
       });
     });
   });
@@ -193,15 +190,15 @@ const createSoftDelete = (id, body) => {
     const { softDelete } = body;
     if (!softDelete)
       return reject({
-        err: { status: 400, message: "Data cannot be empty" }
+        err: { status: 400, message: "Data cannot be empty" },
       });
     if (softDelete !== "0" && softDelete !== "1")
       return reject({
         err: {
           status: 400,
           message: "Incorrect input, please enter 0 or 1",
-          example: "0 = Restore Data, 1 = Delete Data"
-        }
+          example: "0 = Restore Data, 1 = Delete Data",
+        },
       });
 
     const sql = `UPDATE vehicles SET soft_delete = ? WHERE id = ?`;
@@ -212,16 +209,16 @@ const createSoftDelete = (id, body) => {
           result: {
             status: 200,
             id: id,
-            message: "Successfuly Delete Data"
-          }
+            message: "Successfuly Delete Data",
+          },
         });
       if (softDelete === "0")
         return resolve({
           result: {
             status: 200,
             id: id,
-            message: "Successfuly Restore Data"
-          }
+            message: "Successfuly Restore Data",
+          },
         });
     });
   });
@@ -238,9 +235,8 @@ const editVehicle = (id, body, bodyOld) => {
       category,
       location,
       status,
-      photos
+      photos,
     } = body;
-    console.log("PHOTOS", photos);
 
     const {
       nameOld,
@@ -251,9 +247,8 @@ const editVehicle = (id, body, bodyOld) => {
       photoOld,
       id_categoryOld,
       id_locationOld,
-      id_statusOld
+      id_statusOld,
     } = bodyOld;
-    console.log("PHOTO-OLD", photoOld);
     if (!name) {
       name = nameOld;
     }
@@ -294,13 +289,12 @@ const editVehicle = (id, body, bodyOld) => {
       category,
       location,
       status,
-      id
+      id,
     ];
-    console.log("STATEMENT", statement);
+
     db.query(sql, statement, (err, result) => {
       if (err) return reject({ status: 500, err });
-      console.log("ERROR", err);
-      console.log("RESULT", result);
+
       const { affectedRows } = result;
       if (affectedRows == 0) return resolve({ status: 404, result });
       return resolve({
@@ -316,8 +310,8 @@ const editVehicle = (id, body, bodyOld) => {
           photos: JSON.parse(photos),
           category: category,
           location: location,
-          status: status
-        }
+          status: status,
+        },
       });
     });
   });
@@ -339,10 +333,8 @@ const deleteVehicle = (id) => {
 
 const getPhotoVehicle = (images, id) => {
   return new Promise((resolve, reject) => {
-    console.log("id", id);
     const sql = `SELECT photo FROM vehicles WHERE id = ?`;
     db.query(sql, [id], (err, result) => {
-      console.log(result);
       if (err) return reject({ status: 500, err });
       return resolve({ status: 200, result });
     });
@@ -365,7 +357,7 @@ const uploadPhotoVehicle = (namePhotos, id) => {
       // console.log(result)
       resolve({
         status: 200,
-        result: { id: id, result: JSON.parse(inputPhoto) }
+        result: { id: id, result: JSON.parse(inputPhoto) },
       });
     });
   });
@@ -379,5 +371,5 @@ module.exports = {
   deleteVehicle,
   getPhotoVehicle,
   uploadPhotoVehicle,
-  createSoftDelete
+  createSoftDelete,
 };

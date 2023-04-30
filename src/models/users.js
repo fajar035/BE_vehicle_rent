@@ -56,7 +56,7 @@ const getAllProfile = (keyword, query, userInfo) => {
           ? null
           : `/users?by=id&order=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
-        count
+        count,
       };
 
       db.query(sql, statement, (err, result) => {
@@ -65,7 +65,7 @@ const getAllProfile = (keyword, query, userInfo) => {
         if (roles !== "2")
           reject({
             status: 401,
-            err: { message: "Only admin has this access" }
+            err: { message: "Only admin has this access" },
           });
 
         // query page tidak ditemukan
@@ -74,8 +74,8 @@ const getAllProfile = (keyword, query, userInfo) => {
             status: 400,
             result: {
               data: "Data not found",
-              result
-            }
+              result,
+            },
           });
 
         resolve({ status: 200, result: result, meta });
@@ -93,7 +93,6 @@ const getProfileById = (id) => {
     db.query(sql, [id], (err, result) => {
       if (err) return reject({ status: 500, err });
       if (result.length == 0) return resolve({ status: 404, result });
-      console.log("RESULT : ", result)
       resolve({ status: 200, result });
     });
   });
@@ -134,8 +133,8 @@ const addProfile = (body) => {
           gender,
           nohp,
           dateInput,
-          address
-        }
+          address,
+        },
       });
     });
   });
@@ -147,12 +146,15 @@ const updatePassword = (oldPassword, newPassword, id) => {
     const sqlOldPassword = `SELECT password FROM users WHERE id = ?`;
     db.query(sqlOldPassword, [id], (err, result) => {
       if (err) return reject({ status: 500, message: "Query Error", err });
-      console.log("PASSWORD", result[0].password);
+
       const passwordDB = result[0].password;
       bcrypt.compare(oldPassword, passwordDB, (err, result) => {
         if (err)
-          return reject({ status: 400, message: "Compare bcryptjs Failed", err });
-        console.log("RESULT HASED", result);
+          return reject({
+            status: 400,
+            message: "Compare bcryptjs Failed",
+            err,
+          });
         if (result === false) {
           const error = new Error("Old password is incorrect");
           return reject({ status: 400, message: "Old password is incorrect" });
@@ -167,7 +169,7 @@ const updatePassword = (oldPassword, newPassword, id) => {
               if (err) return reject(err);
               return resolve({
                 status: 200,
-                result: { id: id, message: "Update password success" }
+                result: { id: id, message: "Update password success" },
               });
             });
           })
@@ -191,7 +193,7 @@ const editProfile = (body, userInfo, bodyOld) => {
       noHpOld,
       addressOld,
       photoOld,
-      emailOld
+      emailOld,
     } = bodyOld;
     const { id } = userInfo;
 
@@ -246,8 +248,8 @@ const editProfile = (body, userInfo, bodyOld) => {
           dob: dateInput,
           noHp: nohp,
           address: address,
-          photo: photo
-        }
+          photo: photo,
+        },
       });
     });
   });
@@ -283,7 +285,7 @@ const uploadPhoto = (fileName, userInfo) => {
       if (err) return reject({ status: 500, err });
       resolve({
         status: 200,
-        result: { id: id, email: email, filename: fileName }
+        result: { id: id, email: email, filename: fileName },
       });
     });
   });
@@ -308,5 +310,5 @@ module.exports = {
   deleteProfile,
   uploadPhoto,
   getPhoto,
-  updatePassword
+  updatePassword,
 };

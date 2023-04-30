@@ -30,13 +30,9 @@ const deleteCategory = (req, res) => {
   categoryModel
     .deleteCategory(id)
     .then(({ status, result }) => {
-      console.log("STATUS-THEN", status);
-      console.log("RESULT-THEN", result);
       return resHelper.success(res, status, result);
     })
     .catch(({ status, err }) => {
-      console.log("STATUS-CATCH", status);
-      console.log("ERR-CATCH", err);
       return resHelper.fail(res, status, err);
     });
 };

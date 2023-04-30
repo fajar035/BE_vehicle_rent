@@ -82,7 +82,6 @@ const softDeleteVehicle = (req, res) => {
     })
     .catch(({ err }) => {
       return resHelper.fail(res, err.status, { err });
-      console.log("ERROR", err);
     });
 };
 

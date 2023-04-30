@@ -9,8 +9,8 @@ const register = (body) => {
     const sqlInsert = "INSERT INTO users SET ?";
     const checkEmail = "SELECT email FROM users WHERE email = ?";
     const role = 3;
-    const dateNow = new Date()
-    const createdAt = `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}`
+    const dateNow = new Date();
+    const createdAt = `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}`;
     // const createAt = 'asdads'
 
     db.query(checkEmail, [email], (err, result) => {
@@ -21,14 +21,14 @@ const register = (body) => {
           status: 406,
           result: { message: "Email is already registered" },
         });
-        bcrypt
+      bcrypt
         .hash(body.password, 10)
         .then((hashedPassword) => {
           const bodyWithHashedPassword = {
             ...body,
             password: hashedPassword,
             role,
-            createdAt
+            createdAt,
           };
 
           db.query(sqlInsert, [bodyWithHashedPassword], (err, result) => {
@@ -138,7 +138,6 @@ const getOtp = (body) => {
 
     db.query(sqlQuery, [email], (err, result) => {
       if (err) {
-        console.log(err);
         return reject({
           status: 500,
           err: { msg: "Something went wrong", data: null },
@@ -174,16 +173,16 @@ const getOtp = (body) => {
             });
           })
           .catch((err) => {
-            if (err) return reject({
-              status: 500,
-              err: {
-                msg: "Failed to send email ..",
-              }
-            })
+            if (err)
+              return reject({
+                status: 500,
+                err: {
+                  msg: "Failed to send email ..",
+                },
+              });
           });
       });
     });
-
   });
 };
 
@@ -227,7 +226,6 @@ const resetPassword = (body) => {
                 err: { msg: "Something went wrong", data: null },
               });
             }
-            console.log("EMAIL", email);
             return resolve({
               status: 200,
               result: {
@@ -240,8 +238,7 @@ const resetPassword = (body) => {
           });
         })
         .catch((err) => {
-          console.log(err);
-          reject({ status: 500, err: { err: "masuk error" } });
+          return reject({ status: 500, err: { err: "masuk error" } });
         });
     });
   });

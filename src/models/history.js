@@ -192,9 +192,7 @@ const popular = (query) => {
         totalPage,
         count,
       };
-      console.log(statement);
       db.query(sql, statement, (err, result) => {
-        console.log(result);
         if (err) return reject({ status: 500, err });
         if (result.length == 0)
           return resolve({

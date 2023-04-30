@@ -21,7 +21,7 @@ const login = (req, res) => {
       resHelper.success(res, status, { result });
     })
     .catch(({ status, err }) => {
-      resHelper.fail(res, status, { err })
+      resHelper.fail(res, status, { err });
     });
 };
 
@@ -44,11 +44,9 @@ const getOtp = (req, res) => {
   authModel
     .getOtp(body)
     .then(({ status, result }) => {
-      console.log(result)
       return resHelper.success(res, status, result);
     })
     .catch(({ status, err }) => {
-      console.log(status, err)
       return resHelper.fail(res, status, err);
     });
 };

@@ -1,40 +1,37 @@
-const vehicleModel = require("../models/vehicle")
-const resHelper = require("../helpers/response")
-const db = require("../configs/db")
+const vehicleModel = require("../models/vehicle");
+const resHelper = require("../helpers/response");
+const db = require("../configs/db");
 
 const checkCategory = (req, res, next) => {
   const {
-    body: { category }
-  } = req
+    body: { category },
+  } = req;
 
   vehicleModel
     .checkCategory(category)
     .then(({ status, result }) => {
-      console.log(category)
-      console.log(status, result)
       if (typeof result == "undefined")
         return resHelper.success(res, status, {
-          message: "category cannot be empty"
-        })
+          message: "category cannot be empty",
+        });
 
-      next()
+      next();
     })
     .catch((err) => {
-      console.log(err)
       return resHelper.fail(res, 500, {
         message: "An error occured on the server",
-        err
-      })
-    })
-}
+        err,
+      });
+    });
+};
 
 const getVehicle = (req, res, next) => {
-  const { id } = req.params
-  const sql = `SELECT * FROM vehicles WHERE id = ?`
+  const { id } = req.params;
+  const sql = `SELECT * FROM vehicles WHERE id = ?`;
 
   db.query(sql, [id], (err, result) => {
-    if (err) return resHelper.fail(res, { err })
-    const getVehicleDb = result[0]
+    if (err) return resHelper.fail(res, { err });
+    const getVehicleDb = result[0];
     const {
       id,
       name,
@@ -45,8 +42,8 @@ const getVehicle = (req, res, next) => {
       photo,
       id_category,
       id_location,
-      id_status
-    } = getVehicleDb
+      id_status,
+    } = getVehicleDb;
 
     const bodyOld = {
       id: id,
@@ -58,11 +55,11 @@ const getVehicle = (req, res, next) => {
       photoOld: photo,
       id_categoryOld: id_category,
       id_locationOld: id_location,
-      id_statusOld: id_status
-    }
-    req.bodyOld = bodyOld
-    next()
-  })
-}
+      id_statusOld: id_status,
+    };
+    req.bodyOld = bodyOld;
+    next();
+  });
+};
 
-module.exports = { checkCategory, getVehicle }
+module.exports = { checkCategory, getVehicle };

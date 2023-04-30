@@ -61,7 +61,6 @@ const getProfileById = (req, res) => {
       });
     })
     .catch(({ status, err }) => {
-      console.log(err);
       return resHelper.fail(res, status, {
         message: "An error occurred on the server",
         err,
@@ -149,7 +148,6 @@ const updatePassword = (req, res) => {
       });
     })
     .catch(({ status, err, message }) => {
-      console.log("STATUS, ERRM MESSAGE", status, err, message);
       return resHelper.fail(res, status, { message: message, err });
     });
 };
