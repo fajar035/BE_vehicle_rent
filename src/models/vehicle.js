@@ -96,12 +96,12 @@ const getAllVehicle = (keyword, query, { category, location }) => {
           ? null
           : page == Math.ceil(count / limit)
           ? null
-          : `/vehicles?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+          : `/vehicles?order=name&sort=asc&page=${page + 1}&limit=${limit}`,
         prev: isNaN(limit)
           ? null
           : page == 1 || page == 0
           ? null
-          : `/vehicles?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+          : `/vehicles?order=name&sort=asc&page=${page - 1}&limit=${limit}`,
         totalPage,
         count,
       };
