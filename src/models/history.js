@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const getAllHistory = (keyword, query) => {
   return new Promise((resolve, reject) => {
     // total = jumlah price
-    let sql = `SELECT h.id, u.id as "id_user", u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.stock , v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
+    let sql = `SELECT h.id, u.id as "id_user", u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
     const statement = [];
     const order = query.sort;
     let orderBy = "";
@@ -29,10 +29,7 @@ const getAllHistory = (keyword, query) => {
       sql += " ORDER BY ? ?";
       statement.push(mysql.raw(orderBy), mysql.raw(order));
     }
-    // console.log(orderBy)
-    // ambil total data
     const countQuery = `select count(*) as "count" from history`;
-    // let count
     db.query(countQuery, (err, result) => {
       if (err) return reject({ status: 500, err });
 
@@ -100,7 +97,9 @@ const newHistory = (body) => {
       rating,
       testimony,
     } = body;
-
+    const sqlCheckQty = `SELECT stock  FROM vehicles WHERE id = ${id_vehicles}`;
+    const sqlUpdateStatus = `UPDATE vehicles SET id_status = ? WHERE id = ${id_vehicles}`;
+    const sqlUpdateStock = `UPDATE vehicles SET stock = ? WHERE id = ${id_vehicles}`;
     const sql = "INSERT INTO history VALUES(null, ?,?,?,?,?,?,?,?)";
     const formatDate = (date) => {
       const dateStr = date.split("-");
@@ -110,7 +109,6 @@ const newHistory = (body) => {
     const dateInputBooking = formatDate(start_date);
     const dateInputReturn = formatDate(return_date);
     // INSERT INTO `vehicle_rent`.`history` (`id_users`, `id_vehicles`, `id_category`, `id_location`, `qty`, `start_date`, `return_date`, `total`, `rating`, `testimony`) VALUES ('80', '5', '3', '6', '1', '2022-01-10', '2022-02-24', '1', '5', 'Mantab');
-    console.log("TOTAL PRICE", total_price);
     const statement = [
       id_users,
       id_vehicles,
@@ -122,24 +120,57 @@ const newHistory = (body) => {
       testimony,
     ];
 
-    db.query(sql, statement, (err, result) => {
-      // console.log(sql, statement);
+    db.query(sqlCheckQty, (err, result) => {
       if (err) return reject({ status: 500, err });
-      resolve({
-        status: 201,
-        result: {
-          id: result.insertId,
-          message: "Successful Car Rental",
-          id_users,
-          id_vehicles,
-          qty,
-          start_date,
-          return_date,
-          total_price,
-          rating,
-          testimony,
-        },
-      });
+      const stock = parseInt(result[0].stock);
+      if (stock === 0) {
+        db.query(sqlUpdateStatus, [2], (err) => {
+          if (err) return reject({ status: 500, err });
+          return resolve({
+            status: 406,
+            result: {
+              id_vehicles,
+              stock,
+              message: "Vehicle not available",
+            },
+          });
+        });
+      } else {
+        db.query(sqlUpdateStatus, [1], (err) => {
+          if (err) return reject({ status: 500, err });
+          db.query(sql, statement, (err, result) => {
+            if (err) return reject({ status: 500, err });
+            if (stock >= qty) {
+              const newStock = stock - qty;
+              db.query(sqlUpdateStock, [newStock], (err) => {
+                if (err) return reject({ status: 500, err });
+              });
+              resolve({
+                status: 201,
+                result: {
+                  id: result.insertId,
+                  message: "Successful Car Rental",
+                  id_users,
+                  id_vehicles,
+                  qty,
+                  start_date,
+                  return_date,
+                  total_price,
+                  rating,
+                  testimony,
+                },
+              });
+            } else {
+              reject({
+                status: 400,
+                err: {
+                  message: "QTY cannot be more than the vehicle stock",
+                },
+              });
+            }
+          });
+        });
+      }
     });
   });
 };
@@ -147,12 +178,47 @@ const newHistory = (body) => {
 // delete history
 const deleteHistory = (id) => {
   return new Promise((resolve, reject) => {
+    const sqlGetHistory = `SELECT * FROM history WHERE id = ${id}`;
     const sql = "DELETE FROM history WHERE id = ?";
+    db.query(sqlGetHistory, (err, result) => {
+      if (err) return reject({ status: 500, err });
+      if (result.length === 0)
+        return resolve({
+          status: 404,
+          result: { id: id, message: "Data not found" },
+        });
+
+      const history = result[0];
+      const { qty, id_vehicles } = history;
+      const sqlCheckQty = `SELECT stock  FROM vehicles WHERE id = ${id_vehicles}`;
+      const sqlUpdateStatus = `UPDATE vehicles SET id_status = ? WHERE id = ${id_vehicles}`;
+      const sqlUpdateStock = `UPDATE vehicles SET stock = ? WHERE id = ${id_vehicles}`;
+      db.query(sqlCheckQty, (err, result) => {
+        if (err) return reject({ status: 500, err });
+        const stock = parseInt(result[0].stock);
+        if (stock >= 0) {
+          db.query(sqlUpdateStatus, [1], (err) => {
+            if (err) return reject({ status: 500, err });
+            const newStock = stock + parseInt(qty);
+            db.query(sqlUpdateStock, [newStock], (err) => {
+              if (err) return reject({ status: 500, err });
+            });
+          });
+        }
+      });
+    });
+
     db.query(sql, [id], (err, result) => {
       const { affectedRows } = result;
-      if (err) return reject({ status: 500, err });
-      if (affectedRows == 0) return resolve({ status: 404, result });
-      resolve({ status: 200 }, result);
+      if (err)
+        return reject({
+          status: 500,
+          err: { message: "An error occurred on the server" },
+        });
+      resolve({
+        status: 200,
+        result: { id: id, message: "History deleted successfuly" },
+      });
     });
   });
 };
@@ -194,6 +260,7 @@ const popular = (query) => {
       };
       db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err });
+        console.log("RESULT : ", result);
         if (result.length == 0)
           return resolve({
             status: 400,
