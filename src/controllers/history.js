@@ -4,9 +4,8 @@ const resHelper = require("../helpers/response");
 // get all history
 const getAllHistory = (req, res) => {
   const { query } = req;
-
   let keyword = `%%`;
-  if (query.cari) keyword = `'%${query.cari}%'`;
+  if (query.search) keyword = `'%${query.search}%'`;
   historyModel
     .getAllHistory(keyword, query)
     .then(({ status, result, meta }) => {
@@ -48,10 +47,10 @@ const deleteHistory = (req, res) => {
 // popular vehicles
 const popular = (req, res) => {
   const { query } = req;
+
   historyModel
     .popular(query)
     .then(({ status, result, meta }) => {
-      console.log(result);
       return resHelper.success(res, status, { result, meta });
     })
     .catch(({ status, err }) => {

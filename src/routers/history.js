@@ -16,7 +16,7 @@ historyRouter.post("/", checkToken, historyController.newHistory);
 historyRouter.delete("/:id", checkToken, historyController.deleteHistory);
 
 // popular vehicles
-historyRouter.get("/popular", historyController.popular);
+historyRouter.get("/vehicles/popular", historyController.popular);
 
 historyRouter.patch("/:id", checkToken, historyController.updateHistory);
 

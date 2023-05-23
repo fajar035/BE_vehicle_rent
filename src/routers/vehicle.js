@@ -26,7 +26,7 @@ vehicleRouter.patch(
 
 vehicleRouter.delete("/:id", checkToken, vehicleController.deleteVehicle);
 
-// vehicleRouter.get("/location", vehicleController.getLocation)
+// vehicleRouter.get("/location", vehicleController.getLocation);
 
 vehicleRouter.get("/photoVehicle", vehicleController.getPhotoVehicle);
 

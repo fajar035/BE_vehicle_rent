@@ -7,10 +7,11 @@ const mysql = require("mysql");
 const getAllHistory = (keyword, query) => {
   return new Promise((resolve, reject) => {
     // total = jumlah price
-    let sql = `SELECT h.id, u.id as "id_user", u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating from history h join users u on h.id_users = u.id join vehicles v on h.id_vehicles = v.id join category c on v.id_category = c.id join location l on v.id_location = l.id`;
+    let sql = `SELECT h.id, u.id as "id_user", u.name as "name", v.name as "vehicle", c.category as "category", l.location as "location",v.price, h.qty, v.photo , h.start_date as "booking_date", h.return_date as "return_date", h.total_price as "total price", h.rating FROM history h JOIN users u on h.id_users = u.id JOIN vehicles v on h.id_vehicles = v.id JOIN category c on v.id_category = c.id JOIN location l on v.id_location = l.id`;
     const statement = [];
     const order = query.sort;
     let orderBy = "";
+    const category = query.category;
 
     if (query.by && query.by.toLowerCase() == "id") orderBy = "id";
     if (query.by && query.by.toLowerCase() == "name") orderBy = "name";
@@ -20,10 +21,13 @@ const getAllHistory = (keyword, query) => {
       sql += " WHERE u.name LIKE ?";
       statement.push(mysql.raw(keyword));
     }
-
     if (keyword.length === 2 && query.id_user !== undefined) {
       sql += " WHERE u.id LIKE ?";
       statement.push(mysql.raw(query.id_user));
+    }
+    if (keyword !== 2 && category) {
+      sql += " AND category = '?'";
+      statement.push(mysql.raw(query.category));
     }
     if (order && orderBy) {
       sql += " ORDER BY ? ?";
@@ -57,7 +61,7 @@ const getAllHistory = (keyword, query) => {
         totalPage,
         count,
       };
-      // console.log(statement);
+
       db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err });
         if (result.length == 0)
@@ -97,6 +101,20 @@ const newHistory = (body) => {
       rating,
       testimony,
     } = body;
+    if (
+      id_users === undefined ||
+      id_vehicles === undefined ||
+      qty === undefined ||
+      start_date === undefined ||
+      return_date === undefined ||
+      total_price === undefined
+    ) {
+      return reject({
+        status: 400,
+        err: { message: "Please check your input" },
+      });
+    }
+
     const sqlCheckQty = `SELECT stock  FROM vehicles WHERE id = ${id_vehicles}`;
     const sqlUpdateStatus = `UPDATE vehicles SET id_status = ? WHERE id = ${id_vehicles}`;
     const sqlUpdateStock = `UPDATE vehicles SET stock = ? WHERE id = ${id_vehicles}`;
@@ -105,10 +123,8 @@ const newHistory = (body) => {
       const dateStr = date.split("-");
       return dateStr[2] + "-" + dateStr[1] + "-" + dateStr[0];
     };
-
     const dateInputBooking = formatDate(start_date);
     const dateInputReturn = formatDate(return_date);
-    // INSERT INTO `vehicle_rent`.`history` (`id_users`, `id_vehicles`, `id_category`, `id_location`, `qty`, `start_date`, `return_date`, `total`, `rating`, `testimony`) VALUES ('80', '5', '3', '6', '1', '2022-01-10', '2022-02-24', '1', '5', 'Mantab');
     const statement = [
       id_users,
       id_vehicles,
@@ -138,6 +154,7 @@ const newHistory = (body) => {
       } else {
         db.query(sqlUpdateStatus, [1], (err) => {
           if (err) return reject({ status: 500, err });
+
           db.query(sql, statement, (err, result) => {
             if (err) return reject({ status: 500, err });
             if (stock >= qty) {
