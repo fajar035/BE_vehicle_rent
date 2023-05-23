@@ -63,7 +63,7 @@ const addVehicle = (req, res) => {
     })
     .catch(({ status, err }) => {
       res
-        .status(status)
+        .status(status || 500)
         .json({ message: "An error occurred on the server", err });
     });
 };

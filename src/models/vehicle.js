@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 const mysql = require("mysql");
 const db = require("../configs/db");
+const format = require("../helpers/formatDate");
 
 const getAllVehicle = (keyword, query, { category, location }) => {
   return new Promise((resolve, reject) => {
@@ -133,8 +134,6 @@ const getVehicleById = (id) => {
 
 const addVehicle = (body, inputPhoto) => {
   return new Promise((resolve, reject) => {
-    // console.log("BODY", body)
-    // console.log("PHOTO", inputPhoto)
     const soft_delete = "0";
     const {
       name,
@@ -148,7 +147,10 @@ const addVehicle = (body, inputPhoto) => {
     } = body;
 
     const sql =
-      "INSERT INTO vehicles VALUES(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO vehicles VALUES(null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, null)";
+
+    const date = new Date();
+    const createdAt = format.formatDate(date);
 
     const statement = [
       name,
@@ -161,10 +163,11 @@ const addVehicle = (body, inputPhoto) => {
       category,
       location,
       status,
+      createdAt,
     ];
 
     db.query(sql, statement, (err, result) => {
-      // console.log(statement)
+      console.log("ERR : ", err);
       if (err) return reject({ status: 500, err });
       resolve({
         status: 201,
@@ -278,7 +281,11 @@ const editVehicle = (id, body, bodyOld) => {
     }
 
     const sql =
-      "UPDATE vehicles SET name = ?, description = ?, capacity = ?, price = ?, stock = ?, photo = ?, id_category = ?, id_location = ?, id_status = ? WHERE id = ?";
+      "UPDATE vehicles SET name = ?, description = ?, capacity = ?, price = ?, stock = ?, photo = ?, id_category = ?, id_location = ?, id_status = ? , updatedAt = ? WHERE id = ?";
+
+    const date = new Date();
+    const updatedAt = format.formatDate(date);
+
     const statement = [
       name,
       description,
@@ -289,6 +296,7 @@ const editVehicle = (id, body, bodyOld) => {
       category,
       location,
       status,
+      updatedAt,
       id,
     ];
 
