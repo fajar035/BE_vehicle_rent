@@ -68,23 +68,6 @@ const addVehicle = (req, res) => {
     });
 };
 
-const softDeleteVehicle = (req, res) => {
-  let { body, params } = req;
-  const id = params.id;
-
-  vehicleModel
-    .createSoftDelete(id, body)
-    .then(({ result }) => {
-      // resHelper.success(res, status, { message, result });
-      // console.log("MESSAGE", status, result);
-      if (result.status === 200)
-        return resHelper.success(res, result.status, { result });
-    })
-    .catch(({ err }) => {
-      return resHelper.fail(res, err.status, { err });
-    });
-};
-
 const editVehicle = (req, res) => {
   let { body, params, files, bodyOld } = req;
   const id = params.id;
@@ -204,5 +187,4 @@ module.exports = {
   deleteVehicle,
   getPhotoVehicle,
   uploadPhotoVehicle,
-  softDeleteVehicle,
 };

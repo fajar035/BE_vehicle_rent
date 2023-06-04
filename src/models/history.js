@@ -52,12 +52,12 @@ const getAllHistory = (keyword, query) => {
           ? null
           : page == Math.ceil(count / limit)
           ? null
-          : `/history?by=id&order=asc&page=${page + 1}&limit=${limit}`,
+          : `/history?by=id&order=${order}&page=${page + 1}&limit=${limit}`,
         prev: isNaN(limit)
           ? null
           : page == 1 || page == 0
           ? null
-          : `/history?by=id&order=asc&page=${page - 1}&limit=${limit}`,
+          : `/history?by=id&order=${order}&page=${page - 1}&limit=${limit}`,
         totalPage,
         count,
       };
@@ -277,13 +277,15 @@ const popular = (query) => {
       };
       db.query(sql, statement, (err, result) => {
         if (err) return reject({ status: 500, err });
-        console.log("RESULT : ", result);
-        if (result.length == 0)
-          return resolve({
+
+        if (result.length == 0) {
+          resolve({
             status: 400,
             result: { message: "Data not found", result },
           });
-        resolve({ status: 200, result, meta });
+        }
+
+        return resolve({ status: 200, result, meta });
       });
     });
 

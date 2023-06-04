@@ -37,10 +37,4 @@ vehicleRouter.post(
   vehicleController.uploadPhotoVehicle
 );
 
-vehicleRouter.patch(
-  "/softDelete/:id",
-  checkToken,
-  vehicleController.softDeleteVehicle
-);
-
 module.exports = vehicleRouter;

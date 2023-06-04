@@ -1,13 +1,12 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: 'hotmail',
+  service: "hotmail",
   auth: {
     user: process.env.EMAIL_SENDER,
-    pass: process.env.PASSWORD_SENDER
-  }
+    pass: process.env.PASSWORD_SENDER,
+  },
 });
-
 
 exports.sendForgotPass = (email, data) => {
   return new Promise((resolve, reject) => {
@@ -42,8 +41,9 @@ exports.sendForgotPass = (email, data) => {
               line-height: 52px;
               color: #1a1a1a;
               text-decoration: none;
-              
-              text-align: center;
+              width: 100%;
+              display: inline-block;
+              text-align: center !important;
           }
           .link {
               display: inline-block;
@@ -96,7 +96,7 @@ exports.sendForgotPass = (email, data) => {
       <body>
           <div class="wrapper">
               <h2>Hi, ${data.name ? data.name : "Beloved User"}</h2>
-              <span class="company">Vehicle Rental - ikeh151</span>
+              <span class="company">Vehicle Rental - Admin</span>
               <p class="opening">Please enter code below to proceed your reset password request.</p>
               <div class="code-wrapper">
                   <u class="code">${data.otp}</u>
@@ -105,7 +105,7 @@ exports.sendForgotPass = (email, data) => {
               <p class="info">*This is an automated email, please don't reply.</p>
           </div>
       </body>
-      </html>`
+      </html>`,
     };
     transporter.sendMail(message, (error, info) => {
       if (error) {
